@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QNetworkReply>
+#include "pagination.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;

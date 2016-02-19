@@ -18,7 +18,7 @@ bool DetailsModel::filterAcceptsRow(int source_row, const QModelIndex &source_pa
         if ( index.isValid() )
         {
             QString id = sourceModel->data(index, sourceModel->idFieldRole()).toString();
-            if (id == sourceModel->fetchDetailId()) {
+            if (id == sourceModel->fetchDetailLastId()) {
                 ret = true;
             }
         }
