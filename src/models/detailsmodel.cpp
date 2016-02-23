@@ -29,18 +29,3 @@ bool DetailsModel::filterAcceptsRow(int source_row, const QModelIndex &source_pa
 }
 
 void DetailsModel::invalidateModel() { invalidateFilter(); }
-
-//QHash<int, QByteArray> DetailsModel::roleNames() const
-//{
-//    qDebug() << "DetailsModel::roleNames()";
-//    BaseRestListModel *sourceModel = static_cast<BaseRestListModel *> (this->sourceModel());
-//    return sourceModel->detailsRoleNames();
-//}
-
-//void DetailsModel::resetInternalData()
-//{
-//    BaseRestListModel *sourceModel = static_cast<BaseRestListModel *> (this->sourceModel());
-
-//    Q_D(QAbstractProxyModel);
-//    d->roleNames = sourceModel->detailsRoleNames();
-//}
