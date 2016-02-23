@@ -11,10 +11,6 @@ public:
 
     bool filterAcceptsRow( int source_row, const QModelIndex& source_parent ) const override;
     void invalidateModel();
-
-protected:
-    QHash<int, QByteArray> roleNames() const;
-
 };
 
 #endif // DETAILSMODEL_H

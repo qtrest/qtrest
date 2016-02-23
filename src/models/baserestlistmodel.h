@@ -152,8 +152,7 @@ private:
     //Properties store vars
     QHash<int, QByteArray> m_roleNames;
     int m_roleNamesIndex;
-    QHash<int, QByteArray> m_detailsRoleNames;
-    int m_detailsRoleNamesIndex;
+    bool m_detailRoleNamesGenerated;
     QList<RestItem> m_items;
     QStringList m_fields;
     QString m_idField;

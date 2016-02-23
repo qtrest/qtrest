@@ -1,4 +1,5 @@
 #include "restitem.h"
+#include <QDebug>
 
 RestItem::RestItem(QVariantMap object, QString idField) {
     m_object = object;

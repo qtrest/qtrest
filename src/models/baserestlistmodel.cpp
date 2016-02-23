@@ -1,7 +1,7 @@
 #include "baserestlistmodel.h"
 
 BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_sort("-id"),
-    m_roleNamesIndex(0), m_detailsRoleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle)
+    m_roleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle), m_detailRoleNamesGenerated(false)
 {
     restapi.setAccept(accept());
     connect(&restapi,SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)), this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
@@ -23,9 +23,9 @@ bool BaseRestListModel::canFetchMore(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    switch(pagination()->policy()) {
+    switch(m_pagination.policy()) {
     case Pagination::PageNumber:
-        if (pagination()->currentPage() < pagination()->pageCount()) {
+        if (m_pagination.currentPage() < m_pagination.pageCount()) {
             return true;
         } else {
             return false;
@@ -33,7 +33,7 @@ bool BaseRestListModel::canFetchMore(const QModelIndex &parent) const
         break;
     case Pagination::LimitOffset:
     case Pagination::Cursor:
-        if (rowCount() < pagination()->totalCount()) {
+        if (rowCount() < m_pagination.totalCount()) {
             return true;
         } else {
             return false;
@@ -56,9 +56,9 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
 
     switch (loadingStatus()) {
     case LoadingStatus::RequestToReload:
-        pagination()->setCurrentPage(0);
-        pagination()->setOffset(0);
-        pagination()->setCursorValue(0);
+        m_pagination.setCurrentPage(0);
+        m_pagination.setOffset(0);
+        m_pagination.setCursorValue(0);
         setLoadingStatus(LoadingStatus::FullReloadProcessing);
         break;
     case LoadingStatus::Idle:
@@ -71,15 +71,15 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
 
     qDebug() << "fetchMore";
 
-    switch(pagination()->policy()) {
+    switch(m_pagination.policy()) {
     case Pagination::PageNumber: {
-        int nextPage = pagination()->currentPage()+1;
-        pagination()->setCurrentPage(nextPage);
+        int nextPage = m_pagination.currentPage()+1;
+        m_pagination.setCurrentPage(nextPage);
         break;
     }
     case Pagination::LimitOffset: {
-        int offset = pagination()->offset()+pagination()->limit();
-        pagination()->setOffset(offset);
+        int offset = m_pagination.offset()+m_pagination.limit();
+        m_pagination.setOffset(offset);
         break;
     }
     case Pagination::Cursor: {
@@ -87,7 +87,7 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         if (!m_items.isEmpty()) {
             cursor = m_items.last().id();
         }
-        pagination()->setCursorValue(cursor);
+        m_pagination.setCursorValue(cursor);
         break;
     }
     }
@@ -358,16 +358,18 @@ void BaseRestListModel::updateHeadersData(QNetworkReply *reply)
 {
     //update headers data
     QByteArray currentPage;
-    currentPage.append(pagination()->currentPageHeader());
+    currentPage.append(m_pagination.currentPageHeader());
     QByteArray totalCount;
-    totalCount.append(pagination()->totalCountHeader());
+    totalCount.append(m_pagination.totalCountHeader());
     QByteArray pageCount;
-    pageCount.append(pagination()->pageCountHeader());
+    pageCount.append(m_pagination.pageCountHeader());
 
-    pagination()->setCurrentPage(reply->rawHeader(currentPage).toInt());
-    pagination()->setTotalCount(reply->rawHeader(totalCount).toInt());
-    pagination()->setPageCount(reply->rawHeader(pageCount).toInt());
+    m_pagination.setCurrentPage(reply->rawHeader(currentPage).toInt());
+    m_pagination.setTotalCount(reply->rawHeader(totalCount).toInt());
+    m_pagination.setPageCount(reply->rawHeader(pageCount).toInt());
     reply->deleteLater();
+
+    //todo other headers (limit offset and cursor)
 }
 
 void BaseRestListModel::reset()
@@ -406,24 +408,21 @@ void BaseRestListModel::generateRoleNames()
 
 void BaseRestListModel::generateDetailsRoleNames(QVariantMap item)
 {
-    //qDebug() << item;
-    if (m_detailsRoleNamesIndex > 0) {
-        return;
-    }
+    if (m_detailRoleNamesGenerated) { return; }
 
     QStringList keys = item.keys();
 
     if (rowCount() > 0) {
         foreach (QString key, keys) {
-            QByteArray k;
-            k.append(key);
-            if (!m_detailsRoleNames.key(k)) {
-                m_detailsRoleNamesIndex++;
-                m_detailsRoleNames[m_detailsRoleNamesIndex] = k;
-                qDebug() << key;
+            QByteArray k = key.toUtf8();
+            if (!m_roleNames.key(k)) {
+                m_roleNamesIndex++;
+                m_roleNames[m_roleNamesIndex] = k;
             }
         }
     }
+
+    m_detailRoleNamesGenerated = true;
 }
 
 int BaseRestListModel::rowCount(const QModelIndex &parent) const
@@ -475,4 +474,3 @@ void BaseRestListModel::setIdField(QString idField)
     m_idField = idField;
     emit idFieldChanged(idField);
 }
-
