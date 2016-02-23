@@ -25,7 +25,6 @@ public:
 
     //Specify pagination
     Q_PROPERTY(Pagination *pagination READ pagination)
-
     //Specify filters parametres
     Q_PROPERTY(QVariantMap filters READ filters WRITE setFilters NOTIFY filtersChanged)
     //Specify fields parameter
@@ -44,7 +43,6 @@ public:
     Q_PROPERTY(QString loadingErrorString READ loadingErrorString WRITE setLoadingErrorString NOTIFY loadingErrorStringChanged)
     Q_PROPERTY(QNetworkReply::NetworkError loadingErrorCode READ loadingErrorCode WRITE setLoadingErrorCode NOTIFY loadingErrorCodeChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(CanFetchMorePolicy canFetchMorePolicy READ canFetchMorePolicy WRITE setCanFetchMorePolicy NOTIFY canFetchMorePolicyChanged)
 
     //current status of model
     enum LoadingStatus {
@@ -57,94 +55,30 @@ public:
         Error
     };
 
-    //policy for manage max elements for ListView. Default is 'ByPageCountHeader'
-    enum CanFetchMorePolicy {
-        ByPageCountHeader,
-        ByTotalCountHeader,
-        Infinity,
-        Manual
-    };
-
     Q_ENUMS(LoadingStatus)
-    Q_ENUMS(CanFetchMorePolicy)
 
     static void declareQML();
 
+    //Properties GET methods
+    QStringList sort() const;
+    LoadingStatus loadingStatus() const;
+    QVariantMap filters() const;
+    QString loadingErrorString() const;
+    QNetworkReply::NetworkError loadingErrorCode() const;
+    QStringList fields() const;
+    QString idField() const;
+    int idFieldRole() const;
+    QString fetchDetailLastId() const;
+    DetailsModel *detailsModel();
+    Pagination *pagination();
+    QByteArray accept() const;
+    int count() const;
+
+    //Overloaded system methdos
     QVariant data(const QModelIndex &index, int role) const;
 
-    QStringList sort() const
-    {
-        return m_sort;
-    }
-
-    LoadingStatus loadingStatus() const
-    {
-        return m_loadingStatus;
-    }
-
-    QVariantMap filters() const
-    {
-        return m_filters;
-    }
-
-    QString loadingErrorString() const
-    {
-        return m_loadingErrorString;
-    }
-
-    QNetworkReply::NetworkError loadingErrorCode() const
-    {
-        return m_loadingErrorCode;
-    }
-
-    QStringList fields() const
-    {
-        return m_fields;
-    }
-
-    QString idField() const
-    {
-        return m_idField;
-    }
-
-    int idFieldRole() const
-    {
-        QByteArray obj;
-        obj.append(idField());
-        return m_roleNames.key(obj);
-    }
-
-    QString fetchDetailLastId() const
-    {
-        return m_fetchDetailLastId;
-    }
-
-    DetailsModel *detailsModel()
-    {
-        return &m_detailsModel;
-    }
-
-    Pagination *pagination()
-    {
-        return &m_pagination;
-    }
-
-    QByteArray accept() const
-    {
-        return restapi.accept();
-    }
-
-    int count() const
-    {
-        return m_items.count();
-    }
-
-    CanFetchMorePolicy canFetchMorePolicy() const
-    {
-        return m_canFetchMorePolicy;
-    }
-
 signals:
+    //Properties signals
     void countChanged();
     void sortChanged(QStringList sort);
     void loadingStatusChanged(LoadingStatus loadingStatus);
@@ -154,151 +88,81 @@ signals:
     void fieldsChanged(QStringList fields);
     void idFieldChanged(QString idField);
     void acceptChanged(QByteArray accept);
-    void canFetchMorePolicyChanged(CanFetchMorePolicy canFetchMorePolicy);
 
 public slots:
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
     void reload();
     void fetchDetail(QString id);
     void replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString);
+
+    void requestToReload();
+    void forceIdle();
+
+    //Overloaded system methdos
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-    void requestToReload() {
-        setLoadingStatus(LoadingStatus::RequestToReload);
-    }
-
-    void forceIdle() {
-        setLoadingStatus(LoadingStatus::Idle);
-    }
-
-    void setSort(QStringList sort)
-    {
-        if (m_sort == sort)
-            return;
-
-        m_sort = sort;
-        emit sortChanged(sort);
-    }
-
-    void setFilters(QVariantMap filters)
-    {
-        if (m_filters == filters)
-            return;
-
-        m_filters = filters;
-        emit filtersChanged(filters);
-    }
-
-    void setFields(QStringList fields)
-    {
-        if (m_fields == fields)
-            return;
-
-        m_fields = fields;
-        emit fieldsChanged(fields);
-    }
-
-    void setIdField(QString idField)
-    {
-        if (m_idField == idField)
-            return;
-
-        m_idField = idField;
-        emit idFieldChanged(idField);
-    }
-
-    void setCanFetchMorePolicy(CanFetchMorePolicy canFetchMorePolicy)
-    {
-        if (m_canFetchMorePolicy == canFetchMorePolicy) {
-            return;
-        }
-
-        m_canFetchMorePolicy = canFetchMorePolicy;
-        emit canFetchMorePolicyChanged(canFetchMorePolicy);
-    }
+    //Properties public SET methods
+    void setSort(QStringList sort);
+    void setFilters(QVariantMap filters);
+    void setFields(QStringList fields);
+    void setIdField(QString idField);
 
 protected:
+    //reimplement this for call specific API method GET list
     virtual QNetworkReply *fetchMoreImpl(const QModelIndex &parent) = 0;
-    virtual QVariantMap preProcessItem(QVariantMap item) = 0;
+    //reimplement this for call specific API method GET details of record by ID
     virtual QNetworkReply *fetchDetailImpl(QString id) = 0;
-
-    //for get list
+    //reimplenet this for prepropcessing each item before add it to model
+    virtual QVariantMap preProcessItem(QVariantMap item) = 0;
+    //for parse list, reimplemented in JSON and XML models
     virtual QVariantList getVariantList(QByteArray bytes) = 0;
-
-    //for get details for one element
+    //for parse details for one element, reimplemented in JSON and XML models
     virtual QVariantMap getVariantMap(QByteArray bytes) = 0;
 
+    //Update specific headers on updating
     void updateHeadersData(QNetworkReply *reply);
-    void clearForReload();
-    void append(RestItem item);
+
+    //Reset model data
+    void reset();
+
+    //Auto generate role names by REST keys
     void generateRoleNames();
     void generateDetailsRoleNames(QVariantMap item);
-    RestItem findItemById(QString id);
 
-    //TODO fabric method to each items
+    //Items management
     RestItem createItem(QVariantMap value);
     void updateItem(QVariantMap value);
+    RestItem findItemById(QString id);
+    void append(RestItem item);
 
     QHash<int, QByteArray> roleNames() const;
     QHash<int, QByteArray> detailsRoleNames() const;
 
 protected slots:
+    //Properties protected SET methods
     void fetchMoreFinished();
     void fetchDetailFinished();
-
-    void setLoadingStatus(LoadingStatus loadingStatus)
-    {
-        if (m_loadingStatus == loadingStatus)
-            return;
-
-        m_loadingStatus = loadingStatus;
-        emit loadingStatusChanged(loadingStatus);
-    }
-
-    void setAccept(QString accept)
-    {
-        restapi.setAccept(accept);
-    }
-
-    void setLoadingErrorString(QString loadingErrorString)
-    {
-        if (m_loadingErrorString == loadingErrorString)
-            return;
-
-        m_loadingErrorString = loadingErrorString;
-        emit loadingErrorStringChanged(loadingErrorString);
-    }
-
-    void setLoadingErrorCode(QNetworkReply::NetworkError loadingErrorCode)
-    {
-        if (m_loadingErrorCode == loadingErrorCode)
-            return;
-
-        m_loadingErrorCode = loadingErrorCode;
-        emit loadingErrorCodeChanged(loadingErrorCode);
-    }
+    void setLoadingStatus(LoadingStatus loadingStatus);
+    void setAccept(QString accept);
+    void setLoadingErrorString(QString loadingErrorString);
+    void setLoadingErrorCode(QNetworkReply::NetworkError loadingErrorCode);
 
 private:
-
+    //Properties store vars
     QHash<int, QByteArray> m_roleNames;
     int m_roleNamesIndex;
-
     QHash<int, QByteArray> m_detailsRoleNames;
     int m_detailsRoleNamesIndex;
-
     QList<RestItem> m_items;
     QStringList m_fields;
     QString m_idField;
-
     QStringList m_sort;
     LoadingStatus m_loadingStatus;
     QVariantMap m_filters;
     QString m_loadingErrorString;
     QNetworkReply::NetworkError m_loadingErrorCode;
     QString m_fetchDetailLastId;
-    CanFetchMorePolicy m_canFetchMorePolicy;
-
     DetailsModel m_detailsModel;
     Pagination m_pagination;
 };

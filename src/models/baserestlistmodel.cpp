@@ -1,8 +1,7 @@
 #include "baserestlistmodel.h"
 
 BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_sort("-id"),
-    m_roleNamesIndex(0), m_detailsRoleNamesIndex(0),
-    m_canFetchMorePolicy(CanFetchMorePolicy::ByPageCountHeader), m_loadingStatus(LoadingStatus::Idle)
+    m_roleNamesIndex(0), m_detailsRoleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle)
 {
     restapi.setAccept(accept());
     connect(&restapi,SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)), this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
@@ -11,7 +10,6 @@ BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(paren
 void BaseRestListModel::declareQML()
 {
     qRegisterMetaType<DetailsModel*>("DetailsModel*");
-    //qRegisterMetaType<Pagination*>("Pagination*");
     qmlRegisterType<Pagination>("ru.forsk.pagination", 1, 0, "Pagination");
 }
 
@@ -25,36 +23,27 @@ bool BaseRestListModel::canFetchMore(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    int currentPage = m_pagination.currentPage();
-    int pageCount = m_pagination.pageCount();
-    int totalCount = m_pagination.totalCount();
-
-    switch(canFetchMorePolicy()) {
-    case ByPageCountHeader:
-        qDebug() << m_pagination.policy() << Pagination::PageNumber;
-        Q_ASSERT(m_pagination.policy() == Pagination::PageNumber);
-        if (currentPage < pageCount) {
+    switch(pagination()->policy()) {
+    case Pagination::PageNumber:
+        if (pagination()->currentPage() < pagination()->pageCount()) {
             return true;
         } else {
             return false;
         }
         break;
-    case ByTotalCountHeader:
-        Q_ASSERT(m_pagination.policy() == Pagination::LimitOffset || m_pagination.policy() == Pagination::Cursor);
-        if (rowCount() < totalCount) {
+    case Pagination::LimitOffset:
+    case Pagination::Cursor:
+        if (rowCount() < pagination()->totalCount()) {
             return true;
         } else {
             return false;
         }
         break;
-    case Infinity:
-        Q_ASSERT(m_pagination.policy() == Pagination::None);
-        return true;
-        break;
-    case Manual:
-        Q_ASSERT(m_pagination.policy() == Pagination::Manual);
-        qDebug() << "You must redefine canFetchMore function for use Manual policy";
+    case Pagination::None:
         return false;
+        break;
+    case  Pagination::Infinity:
+        return true;
         break;
     default:
         return false;
@@ -67,8 +56,9 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
 
     switch (loadingStatus()) {
     case LoadingStatus::RequestToReload:
-        m_pagination.setCurrentPage(0);
-
+        pagination()->setCurrentPage(0);
+        pagination()->setOffset(0);
+        pagination()->setCursorValue(0);
         setLoadingStatus(LoadingStatus::FullReloadProcessing);
         break;
     case LoadingStatus::Idle:
@@ -81,8 +71,26 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
 
     qDebug() << "fetchMore";
 
-    int nextPage = pagination()->currentPage()+1;
-    pagination()->setCurrentPage(nextPage);
+    switch(pagination()->policy()) {
+    case Pagination::PageNumber: {
+        int nextPage = pagination()->currentPage()+1;
+        pagination()->setCurrentPage(nextPage);
+        break;
+    }
+    case Pagination::LimitOffset: {
+        int offset = pagination()->offset()+pagination()->limit();
+        pagination()->setOffset(offset);
+        break;
+    }
+    case Pagination::Cursor: {
+        QString cursor = 0;
+        if (!m_items.isEmpty()) {
+            cursor = m_items.last().id();
+        }
+        pagination()->setCursorValue(cursor);
+        break;
+    }
+    }
 
     QNetworkReply *reply = fetchMoreImpl(parent);
     connect(reply, SIGNAL(finished()), this, SLOT(fetchMoreFinished()));
@@ -101,8 +109,6 @@ void BaseRestListModel::fetchMoreFinished()
 
     qDebug() << "fetchMoreFinished";
 
-    //TODO check is reply for me
-
     updateHeadersData(reply);
 
     QVariantList values = getVariantList(reply->readAll());
@@ -113,7 +119,7 @@ void BaseRestListModel::fetchMoreFinished()
 
     //check if we need to full reload
     if (this->loadingStatus() == LoadingStatus::FullReloadProcessing) {
-        clearForReload();
+        reset();
         insertFrom = rowCount();
         insertCount = values.count()-1;
     }
@@ -141,8 +147,6 @@ void BaseRestListModel::fetchMoreFinished()
     generateRoleNames();
 
     endInsertRows();
-
-    detailsModel()->setSourceModel(this);
 
     setLoadingStatus(LoadingStatus::Idle);
 
@@ -185,7 +189,7 @@ void BaseRestListModel::fetchDetailFinished()
         return;
     }
 
-    QVariantMap item = getVariantMap(reply->readAll());
+    QVariantMap item = preProcessItem(getVariantMap(reply->readAll()));
 
     updateItem(item);
 
@@ -194,6 +198,38 @@ void BaseRestListModel::fetchDetailFinished()
     detailsModel()->setSourceModel(this);
 
     setLoadingStatus(LoadingStatus::IdleDetails);
+}
+
+void BaseRestListModel::setLoadingStatus(BaseRestListModel::LoadingStatus loadingStatus)
+{
+    if (m_loadingStatus == loadingStatus)
+        return;
+
+    m_loadingStatus = loadingStatus;
+    emit loadingStatusChanged(loadingStatus);
+}
+
+void BaseRestListModel::setAccept(QString accept)
+{
+    restapi.setAccept(accept);
+}
+
+void BaseRestListModel::setLoadingErrorString(QString loadingErrorString)
+{
+    if (m_loadingErrorString == loadingErrorString)
+        return;
+
+    m_loadingErrorString = loadingErrorString;
+    emit loadingErrorStringChanged(loadingErrorString);
+}
+
+void BaseRestListModel::setLoadingErrorCode(QNetworkReply::NetworkError loadingErrorCode)
+{
+    if (m_loadingErrorCode == loadingErrorCode)
+        return;
+
+    m_loadingErrorCode = loadingErrorCode;
+    emit loadingErrorCodeChanged(loadingErrorCode);
 }
 
 void BaseRestListModel::replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString)
@@ -241,6 +277,73 @@ QVariant BaseRestListModel::data(const QModelIndex &index, int role) const
     return item.value(m_roleNames[role]);
 }
 
+QStringList BaseRestListModel::sort() const
+{
+    return m_sort;
+}
+
+BaseRestListModel::LoadingStatus BaseRestListModel::loadingStatus() const
+{
+    return m_loadingStatus;
+}
+
+QVariantMap BaseRestListModel::filters() const
+{
+    return m_filters;
+}
+
+QString BaseRestListModel::loadingErrorString() const
+{
+    return m_loadingErrorString;
+}
+
+QNetworkReply::NetworkError BaseRestListModel::loadingErrorCode() const
+{
+    return m_loadingErrorCode;
+}
+
+QStringList BaseRestListModel::fields() const
+{
+    return m_fields;
+}
+
+QString BaseRestListModel::idField() const
+{
+    return m_idField;
+}
+
+int BaseRestListModel::idFieldRole() const
+{
+    QByteArray obj;
+    obj.append(idField());
+    return m_roleNames.key(obj);
+}
+
+QString BaseRestListModel::fetchDetailLastId() const
+{
+    return m_fetchDetailLastId;
+}
+
+DetailsModel *BaseRestListModel::detailsModel()
+{
+    return &m_detailsModel;
+}
+
+Pagination *BaseRestListModel::pagination()
+{
+    return &m_pagination;
+}
+
+QByteArray BaseRestListModel::accept() const
+{
+    return restapi.accept();
+}
+
+int BaseRestListModel::count() const
+{
+    return m_items.count();
+}
+
 QHash<int, QByteArray> BaseRestListModel::roleNames() const
 {
     return m_roleNames;
@@ -267,12 +370,10 @@ void BaseRestListModel::updateHeadersData(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-void BaseRestListModel::clearForReload()
+void BaseRestListModel::reset()
 {
     beginResetModel();
-
     m_items.clear();
-
     endResetModel();
 }
 
@@ -330,3 +431,48 @@ int BaseRestListModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     return m_items.count();
 }
+
+void BaseRestListModel::requestToReload() {
+    setLoadingStatus(LoadingStatus::RequestToReload);
+}
+
+void BaseRestListModel::forceIdle() {
+    setLoadingStatus(LoadingStatus::Idle);
+}
+
+void BaseRestListModel::setSort(QStringList sort)
+{
+    if (m_sort == sort)
+        return;
+
+    m_sort = sort;
+    emit sortChanged(sort);
+}
+
+void BaseRestListModel::setFilters(QVariantMap filters)
+{
+    if (m_filters == filters)
+        return;
+
+    m_filters = filters;
+    emit filtersChanged(filters);
+}
+
+void BaseRestListModel::setFields(QStringList fields)
+{
+    if (m_fields == fields)
+        return;
+
+    m_fields = fields;
+    emit fieldsChanged(fields);
+}
+
+void BaseRestListModel::setIdField(QString idField)
+{
+    if (m_idField == idField)
+        return;
+
+    m_idField = idField;
+    emit idFieldChanged(idField);
+}
+

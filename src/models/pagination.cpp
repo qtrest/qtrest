@@ -48,6 +48,26 @@ Pagination::PaginationPolicy Pagination::policy() const
     return m_policy;
 }
 
+int Pagination::limit() const
+{
+    return m_limit;
+}
+
+int Pagination::offset() const
+{
+    return m_offset;
+}
+
+QString Pagination::cursorQueryParam() const
+{
+    return m_cursorQueryParam;
+}
+
+QString Pagination::cursorValue() const
+{
+    return m_cursorValue;
+}
+
 void Pagination::setPerPage(int perPage)
 {
     qDebug() << "per page set" << perPage;
@@ -119,4 +139,40 @@ void Pagination::setPolicy(Pagination::PaginationPolicy policy)
 
     m_policy = policy;
     emit policyChanged(policy);
+}
+
+void Pagination::setLimit(int limit)
+{
+    if (m_limit == limit)
+        return;
+
+    m_limit = limit;
+    emit limitChanged(limit);
+}
+
+void Pagination::setOffset(int offset)
+{
+    if (m_offset == offset)
+        return;
+
+    m_offset = offset;
+    emit offsetChanged(offset);
+}
+
+void Pagination::setCursorQueryParam(QString cursorQueryParam)
+{
+    if (m_cursorQueryParam == cursorQueryParam)
+        return;
+
+    m_cursorQueryParam = cursorQueryParam;
+    emit cursorQueryParamChanged(cursorQueryParam);
+}
+
+void Pagination::setCursorValue(QString cursorValue)
+{
+    if (m_cursorValue == cursorValue)
+        return;
+
+    m_cursorValue = cursorValue;
+    emit cursorValueChanged(cursorValue);
 }

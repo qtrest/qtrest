@@ -20,22 +20,24 @@ public:
     Q_PROPERTY(int currentPage READ currentPage WRITE setCurrentPage NOTIFY currentPageChanged)
     //Specify current page header. Default is incremental X-Pagination-Current-Page, increment by call fetchMore (X-Pagination-Page-Count)
     Q_PROPERTY(QString currentPageHeader READ currentPageHeader WRITE setCurrentPageHeader NOTIFY currentPageHeaderChanged)
-    //Read only max total records count from X-Pagination-Total-Count
-    Q_PROPERTY(int totalCount READ totalCount WRITE setTotalCount NOTIFY totalCountChanged)
-    //Max total records count. Default is X-Pagination-Total-Count
-    Q_PROPERTY(QString totalCountHeader READ totalCountHeader WRITE setTotalCountHeader NOTIFY totalCountHeaderChanged)
     //Read only max page count from X-Pagination-Page-Count
     Q_PROPERTY(int pageCount READ pageCount WRITE setPageCount NOTIFY pageCountChanged)
     //Max page count. Default X-Pagination-Page-Count
     Q_PROPERTY(QString pageCountHeader READ pageCountHeader WRITE setPageCountHeader NOTIFY pageCountHeaderChanged)
+
+    //----For LimitOffsetPolicy and CursorPolicy----
+    //Max total records count. Default is X-Pagination-Total-Count
+    Q_PROPERTY(QString totalCountHeader READ totalCountHeader WRITE setTotalCountHeader NOTIFY totalCountHeaderChanged)
+    //Read only max total records count from X-Pagination-Total-Count
+    Q_PROPERTY(int totalCount READ totalCount WRITE setTotalCount NOTIFY totalCountChanged)
 
     //----LimitOffsetPolicy----
     Q_PROPERTY(int limit READ limit WRITE setLimit NOTIFY limitChanged)
     Q_PROPERTY(int offset READ offset WRITE setOffset NOTIFY offsetChanged)
 
     //----CursorPolicy----
-    Q_PROPERTY(int cursorQueryParam READ cursorQueryParam WRITE setCursorQueryParam NOTIFY cursorQueryParamChanged)
-    Q_PROPERTY(int cursorValue READ cursorValue WRITE setCursorValue NOTIFY cursorValueChanged)
+    Q_PROPERTY(QString cursorQueryParam READ cursorQueryParam WRITE setCursorQueryParam NOTIFY cursorQueryParamChanged)
+    Q_PROPERTY(QString cursorValue READ cursorValue WRITE setCursorValue NOTIFY cursorValueChanged)
 
     //current model pagination policy
     //for example: http://www.django-rest-framework.org/api-guide/pagination/
@@ -44,39 +46,26 @@ public:
         PageNumber,
         LimitOffset,
         Cursor,
-        Manual
+        Infinity
     };
 
     Q_ENUMS(PaginationPolicy)
 
+    //Properties GET methods
+    PaginationPolicy policy() const;
+
     int perPage() const;
     int currentPage() const;
     QString currentPageHeader() const;
-    int totalCount() const;
-    QString totalCountHeader() const;
     int pageCount() const;
     QString pageCountHeader() const;
-    PaginationPolicy policy() const;
 
-    int limit() const
-    {
-        return m_limit;
-    }
-
-    int offset() const
-    {
-        return m_offset;
-    }
-
-    int cursorQueryParam() const
-    {
-        return m_cursorQueryParam;
-    }
-
-    int cursorValue() const
-    {
-        return m_cursorValue;
-    }
+    int totalCount() const;
+    QString totalCountHeader() const;
+    int limit() const;
+    int offset() const;
+    QString cursorQueryParam() const;
+    QString cursorValue() const;
 
 signals:
     void perPageChanged(int perPage);
@@ -89,10 +78,12 @@ signals:
     void policyChanged(PaginationPolicy policy);
     void limitChanged(int limit);
     void offsetChanged(int offset);
-    void cursorQueryParamChanged(int cursorQueryParam);
-    void cursorValueChanged(int cursorValue);
+    void cursorQueryParamChanged(QString cursorQueryParam);
+    void cursorValueChanged(QString cursorValue);
 
 public slots:
+    //properties SET methods
+    void setPolicy(PaginationPolicy policy);
     void setPerPage(int perPage);
     void setCurrentPage(int currentPage);
     void setCurrentPageHeader(QString currentPageHeader);
@@ -100,44 +91,10 @@ public slots:
     void setTotalCountHeader(QString totalCountHeader);
     void setPageCount(int pageCount);
     void setPageCountHeader(QString pageCountHeader);
-
-    void setPolicy(PaginationPolicy policy);
-
-    void setLimit(int limit)
-    {
-        if (m_limit == limit)
-            return;
-
-        m_limit = limit;
-        emit limitChanged(limit);
-    }
-
-    void setOffset(int offset)
-    {
-        if (m_offset == offset)
-            return;
-
-        m_offset = offset;
-        emit offsetChanged(offset);
-    }
-
-    void setCursorQueryParam(int cursorQueryParam)
-    {
-        if (m_cursorQueryParam == cursorQueryParam)
-            return;
-
-        m_cursorQueryParam = cursorQueryParam;
-        emit cursorQueryParamChanged(cursorQueryParam);
-    }
-
-    void setCursorValue(int cursorValue)
-    {
-        if (m_cursorValue == cursorValue)
-            return;
-
-        m_cursorValue = cursorValue;
-        emit cursorValueChanged(cursorValue);
-    }
+    void setLimit(int limit);
+    void setOffset(int offset);
+    void setCursorQueryParam(QString cursorQueryParam);
+    void setCursorValue(QString cursorValue);
 
 private:
     int m_perPage;
@@ -150,8 +107,8 @@ private:
     PaginationPolicy m_policy;
     int m_limit;
     int m_offset;
-    int m_cursorQueryParam;
-    int m_cursorValue;
+    QString m_cursorQueryParam;
+    QString m_cursorValue;
 };
 
 #endif // PAGINATIONTEST_H
