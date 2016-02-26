@@ -197,13 +197,16 @@ void BaseRestListModel::fetchDetailFinished()
 
     detailsModel()->setSourceModel(this);
 
+    //qDebug() << item << roleNames();
+
     setLoadingStatus(LoadingStatus::IdleDetails);
 }
 
 void BaseRestListModel::setLoadingStatus(BaseRestListModel::LoadingStatus loadingStatus)
 {
-    if (m_loadingStatus == loadingStatus)
+    if (m_loadingStatus == loadingStatus) {
         return;
+    }
 
     m_loadingStatus = loadingStatus;
     emit loadingStatusChanged(loadingStatus);
@@ -262,8 +265,9 @@ void BaseRestListModel::updateItem(QVariantMap value)
     RestItem item = findItemById(fetchDetailLastId());
     int row = m_items.indexOf(item);
     item.update(value);
+    m_items.replace(row, item);
     emit dataChanged(index(row),index(row));
-    //qDebug() << 'detail updated' << row << item.id();
+    qDebug() << "UPDATED" << row << item.id();
 }
 
 QVariant BaseRestListModel::data(const QModelIndex &index, int role) const
@@ -274,6 +278,9 @@ QVariant BaseRestListModel::data(const QModelIndex &index, int role) const
     }
 
     RestItem item = m_items.at(index.row());
+
+    qDebug() << role << index.row() << m_roleNames[role] << item.id() << item.value("longDescription") << item.value(m_roleNames[role]) << item.keys();
+
     return item.value(m_roleNames[role]);
 }
 
@@ -351,7 +358,7 @@ QHash<int, QByteArray> BaseRestListModel::roleNames() const
 
 QHash<int, QByteArray> BaseRestListModel::detailsRoleNames() const
 {
-    return m_detailsRoleNames;
+    return m_roleNames;
 }
 
 void BaseRestListModel::updateHeadersData(QNetworkReply *reply)
