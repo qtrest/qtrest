@@ -269,10 +269,13 @@ int main(int argc, char *argv[])
 ```
 
 ## Use model from QML
-We have full support for StackView navigation by 'details model' available in each your model.
-
 At first, we must declare our model:
 ``` QML
+import ru.forsk.coupons 1.0
+import ru.forsk.pagination 1.0
+
+...
+
 CouponModel {
         id: coupons;
         
@@ -308,3 +311,96 @@ CouponModel {
     }
 ```
 
+Then we can use the model as a standard element:
+``` QML
+ListView {
+    id: couponsList
+    model: coupons
+    
+    property string detailSource: "qrc:/CouponDetail.qml"
+    
+    delegate: Item {
+        Text {
+            text: title
+        }
+        
+        MouseArea {
+            id: detail
+            anchors.fill: parent
+    
+            onClicked: {
+                couponsModel.fetchDetail(id)
+                stackView.push(couponsList.detailSource, 
+                {detailsModel: couponsModel.detailsModel, 
+                couponsModel: couponsModel})
+            }
+        }
+    }
+}
+```
+Also, we have full support for StackView navigation by special 'details model' available in each your model, based on QSortFilterModel and using 'ID' field as filter. For example, we have ListView in one Stack element, and DrtailView in other stack element.
+We may fetch details info for one of elements and send this element into Details page, when we may use simple hack for display one element with detail info:
+``` QML
+import QtQuick 2.6
+import Qt.labs.controls 1.0
+import ru.forsk.coupons 1.0
+
+Item {
+    id: details
+    anchors.fill: parent
+
+    property string titleText: qsTr("Detail")
+
+    property var detailsModel
+    property var couponsModel
+    property var loadingStatus: couponsModel.loadingStatus
+
+    onLoadingStatusChanged: {
+        if (loadingStatus == CouponModel.IdleDetails) {
+            pageLoader.sourceComponent = detailComponent
+        }
+    }
+
+    Loader {
+        id: pageLoader
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: pageLoader.sourceComponent = detailComponent
+    }
+
+    BusyIndicator {
+        id: loadingIndicator
+        width: settings.busyIndicatorSize*1.5
+        height: settings.busyIndicatorSize*1.5
+
+        running: loadingStatus == CouponModel.LoadDetailsProcessing
+        visible: opacity > 0
+        opacity: loadingStatus == CouponModel.LoadDetailsProcessing ? 1 : 0
+        anchors.centerIn: parent
+        Behavior on opacity {
+            NumberAnimation { duration: 400; }
+        }
+    }
+
+    Component {
+        id: detailComponent
+
+        ListView {
+            id: couponsList
+            width: details.width
+            height: details.height
+            model: detailsModel
+            interactive: false
+
+            delegate: ItemDelegate {
+                id: delegate
+                width: couponsList.width;
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
+    }
+}
+```
+In this code we open Detail page, waitng for loading details info with BusyIndicator displaying, and after loading complete - display full information for item. Our hack is in ListView, it will be not interactive and display only one item.
