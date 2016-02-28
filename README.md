@@ -16,7 +16,8 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - Filtering data;
 - Authentication;
 - StackView navigation;
-- Specify fields for GET list method
+- Specify fields for GET list method;
+- Lazy loading details item data;
 - Separate model and API methods;
 - Simple API implementation for your apps;
 - State based model information;
