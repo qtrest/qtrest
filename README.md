@@ -36,7 +36,7 @@ I will made fully functionality example application, available at here: https://
 ## Usage
 Usage library is simplest as it possible. I will show howto use it on my real example project.
 
-### Include library to your project
+#### Include library to your project
 First, clone library
 ```
 mkdir PROJECT_ROOT/api/
@@ -45,7 +45,7 @@ git clone https://github.com/kafeg/qtrest.git
 ```
 Then add `include (api/qtrest/qtrest.pri)` to your project file.
 
-### Create your own API class
+#### Create your own API class
 After setup library we must create class API inherited from existing APIBase, e.g. `api/api.h` and `api/api.cpp`:
 ``` C++
 #ifndef SKIDKZAPI_H
@@ -156,7 +156,7 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
 }
 ```
 
-### Create your model classes, based on your API
+#### Create your model classes, based on your API
 For example we create one model, but you may use one API class for multiple models. E.g. you may use one API class for get list of coupons and for list of categories.
 
 You model class must reimplement 6 methods:
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-## Use model from QML
+### Use model from QML
 At first, we must declare our model:
 ``` QML
 import ru.forsk.coupons 1.0
