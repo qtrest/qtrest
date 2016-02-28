@@ -26,7 +26,7 @@ By default library support standard Yii2 REST API. Read more:
 
 ## Known issues/TODO
 - At now library readonly, without POST/PUT methods;
-- Support JSON sub array data, but not support XML subarray data;
+- Support JSON subarray data, but not support XML subarray data;
 
 ## Example application
 I will made fully functionality example application, available at here: https://github.com/kafeg/qtrest-example
@@ -158,11 +158,13 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
 For example we create one model, but you may use one API class for multiple models. E.g. you may use one API class for get list of coupons and for list of categories.
 
 You model class must reimplement 6 methods:
+```
 - declareQML(); //Declare you model for use it in QML code
 - fetchMoreImpl(); //Call API fucntion for fetchMore function (e.g. getCoupons())
 - fetchDetailImpl(); //Call API fucntion for fetchDetails for one item (e.g. getCouponDetail())
 - preProcessItem(); //Pre proccess each new list item for manage field list
 - apiInstance(); //Make your API implementation available for base classes
+```
 
 For example we make Coupons model from our example app (api/models/couponmodel.h):
 ``` C++
@@ -267,3 +269,42 @@ int main(int argc, char *argv[])
 ```
 
 ## Use model from QML
+We have full support for StackView navigation by 'details model' available in each your model.
+
+At first, we must declare our model:
+``` QML
+CouponModel {
+        id: coupons;
+        
+        //Note: only if our APi support filtering
+        //Specify base filter, than we make filters form and set filters dynamicaly
+        filters: {'isArchive': '0'}
+        
+        //we must cpecify ID field for correct interaction with API
+        idField: 'id'
+        
+        //Note: only if our APi support fields
+        //In ListView we need only base fileds, and exclude longDescription fields and other.
+        fields: ['id','title','sourceServiceId','imagesLinks',
+                'mainImageLink','pageLink','cityId','boughtCount','shortDescription',
+                'createTimestamp', 'serviceName', 'discountType', 'originalCouponPrice', 
+                'originalPrice', 'discountPercent', 'discountPrice']
+        
+        //Note: only if our APi support sorting
+        //Additional param for sorting our results
+        sort: ['-id']
+
+        //If we need to paging our API, we need to specify paging method. Default is None.
+        pagination {
+            policy: Pagination.PageNumber
+            perPage: 20
+            currentPageHeader: "X-Pagination-Current-Page"
+            totalCountHeader: "X-Pagination-Total-Count"
+            pageCountHeader: "X-Pagination-Page-Count"
+        }
+
+        //And when model is complete we call reload function for load elements
+        Component.onCompleted: { reload(); }
+    }
+```
+
