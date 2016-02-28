@@ -3,9 +3,10 @@
 Qt Micro REST Client Framework - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs.
 
-By default library support standard Yii2 REST API. Read more:
+By default library support standard Yii2 REST API and Django REST Framework. Read more:
 - English: https://github.com/yiisoft/yii2/blob/master/docs/guide/rest-quick-start.md
 - Russian: https://github.com/yiisoft/yii2/blob/master/docs/guide-ru/rest-quick-start.md
+- http://www.django-rest-framework.org/
 
 ## Features
 - Based on QAbstractListModel with fetchMore and canFetchMore support;
@@ -16,7 +17,6 @@ By default library support standard Yii2 REST API. Read more:
 - Authentication;
 - StackView navigation;
 - Specify fields for GET list method
-- Support for Yii2 REST and Django REST Framework from the box;
 - Separate model and API methods;
 - Simple API implementation for your apps;
 - State based model information;
