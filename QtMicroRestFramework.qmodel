@@ -704,7 +704,7 @@ You may use different APIs for one or more services.</text>
                          <uid>{0ead5f4b-f247-4c3e-b1c3-b902a66fa911}</uid>
                         </DElement>
                        </base-DElement>
-                       <text>4. At this stage we have standard model interface for work with model data, include featchMore and canFetchMore features.
+                       <text>4. At this stage we have standard model interface for work with model data, include fetchMore and canFetchMore features.
 Additional we have value of 'loadingStatus' property and access to QNetworkReply error status.</text>
                        <pos>x:675;y:310</pos>
                        <rect>x:0;y:0;w:277;h:81</rect>
@@ -805,7 +805,7 @@ Additional we have value of 'loadingStatus' property and access to QNetworkReply
                     </item>
                    </qlist>
                   </elements>
-                  <last-modified>1455366582222</last-modified>
+                  <last-modified>1456658869231</last-modified>
                  </MDiagram>
                 </base-MDiagram>
                </MCanvasDiagram>
