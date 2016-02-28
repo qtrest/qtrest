@@ -1,4 +1,4 @@
-# Qt Micro REST Client Framework
+# Qt Micro REST Client Framework (Beta)
 
 Qt Micro REST Client Framework - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs.
