@@ -24,6 +24,8 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - Interfaces from C++ and Qt Quick/QML;
 - Multiple external API services in different models.
 
+![Qt Micro REST Client Framework](https://raw.githubusercontent.com/kafeg/qtrest/master/docs/restapi.png "REST API Scheme")
+
 ## Known issues/TODO
 - At now library readonly, without POST/PUT methods;
 - Support JSON subarray data, but not support XML subarray data;
