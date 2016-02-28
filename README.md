@@ -61,7 +61,9 @@ public:
 
     //api methods
     //get list of objects
-    QNetworkReply *getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters = QVariantMap(), QStringList fields = QStringList());
+    QNetworkReply *getCoupons(QStringList sort, Pagination *pagination, 
+                                QVariantMap filters = QVariantMap(), 
+                                QStringList fields = QStringList());
     //get full data for specified item
     QNetworkReply *getCouponDetail(QString id);
 };
@@ -151,3 +153,117 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
     return reply;
 }
 ```
+
+### Create your model classes, based on your API
+For example we create one model, but you may use one API class for multiple models. E.g. you may use one API class for get list of coupons and for list of categories.
+
+You model class must reimplement 6 methods:
+- declareQML(); //Declare you model for use it in QML code
+- fetchMoreImpl(); //Call API fucntion for fetchMore function (e.g. getCoupons())
+- fetchDetailImpl(); //Call API fucntion for fetchDetails for one item (e.g. getCouponDetail())
+- preProcessItem(); //Pre proccess each new list item for manage field list
+- apiInstance(); //Make your API implementation available for base classes
+
+For example we make Coupons model from our example app (api/models/couponmodel.h):
+``` C++
+#ifndef COUPONMODEL_H
+#define COUPONMODEL_H
+
+//We use JSON API version
+#include "jsonrestlistmodel.h"
+
+//We use our Skid.KZ API
+#include "api/skidkzapi.h"
+
+class CouponModel : public JsonRestListModel
+{
+    Q_OBJECT
+public:
+    explicit CouponModel(QObject *parent = 0);
+
+    static void declareQML() {
+        JsonRestListModel::declareQML();
+        qmlRegisterType<CouponModel>("ru.forsk.coupons", 1, 0, "CouponModel");
+    }
+protected:
+    QNetworkReply *fetchMoreImpl(const QModelIndex &parent);
+    QNetworkReply *fetchDetailImpl(QString id);
+    QVariantMap preProcessItem(QVariantMap item);
+
+    APIBase *apiInstance();
+};
+
+#endif // COUPONMODEL_H
+```
+And implement this class:
+``` C++
+#include "couponmodel.h"
+
+CouponModel::CouponModel(QObject *parent) : JsonRestListModel(parent)
+{
+
+}
+
+APIBase *CouponModel::apiInstance()
+{
+    return &SkidKZApi::instance();
+}
+
+QNetworkReply *CouponModel::fetchMoreImpl(const QModelIndex &parent)
+{
+    return SkidKZApi::instance().getCoupons(sort(), pagination(), filters(), fields());
+}
+
+QNetworkReply *CouponModel::fetchDetailImpl(QString id)
+{
+    return SkidKZApi::instance().getCouponDetail(id);
+}
+
+//Data management and preparation is function of Backend developer, but if he or she 
+//is do not want to deal with data preparation, you may to prepare each item yourself
+QVariantMap CouponModel::preProcessItem(QVariantMap item)
+{
+    QDate date = QDateTime::fromString(item.value("createTimestamp").toString(), 
+                                        "yyyy-MM-dd hh:mm:ss").date();
+    item.insert("createDate", date.toString("dd.MM.yyyy"));
+
+    QString originalCouponPrice = item.value("originalCouponPrice").toString().trimmed();
+    if (originalCouponPrice.isEmpty()) { originalCouponPrice = "?"; }
+    QString discountPercent = item.value("discountPercent").toString()
+    .trimmed().remove("—").remove("-").remove("%");
+    if (discountPercent.isEmpty()) { discountPercent = "?"; }
+    QString originalPrice = item.value("originalPrice").toString().trimmed();
+    if (originalPrice.isEmpty()) { originalPrice = "?"; }
+    QString discountPrice = item.value("discountPrice").toString().remove("тг.").trimmed();
+    if (discountPrice.isEmpty()) { discountPrice = "?"; }
+
+    QString discountType = item.value("discountType").toString();
+    QString discountString = tr("Undefined Type");
+    if (discountType == "freeCoupon" || discountType == "coupon") {
+        discountString = tr("Coupon: %1. Discount: %2%")
+        .arg(originalCouponPrice).arg(discountPercent);
+    } else if (discountType == "full") {
+        discountString = tr("Cost: %1. Certificate: %2. Discount: %3%")
+        .arg(originalPrice).arg(discountPrice).arg(discountPercent);
+    }
+
+    item.insert("discountString", discountString);
+
+    return item;
+}
+```
+At this point we alredy full implemented our API and model. For use it from C++ you may use this model as is.
+For use it from QML you must to add some code to `main.cpp`:
+```
+#include "api/models/couponmodel.h"
+...
+int main(int argc, char *argv[])
+{
+    ...
+    //models
+    CouponModel::declareQML();
+    ...
+}
+```
+
+## Use model from QML
