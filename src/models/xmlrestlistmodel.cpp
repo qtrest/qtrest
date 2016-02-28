@@ -98,8 +98,6 @@ QVariantList XmlRestListModel::getVariantList(QByteArray bytes)
         }
     }
 
-    //qDebug() << list;
-
     return list;
 }
 

@@ -1,11 +1,10 @@
 #include "pagination.h"
-#include <QDebug>
 
 Pagination::Pagination(QObject *parent) : QObject(parent),
     m_perPage(20), m_currentPage(0), m_totalCount(0), m_pageCount(0),
     m_currentPageHeader("X-Pagination-Current-Page"), m_totalCountHeader("X-Pagination-Total-Count"), m_pageCountHeader("X-Pagination-Page-Count")
 {
-    qDebug() << "Pagination::Pagination" << m_perPage << m_currentPage;
+
 }
 
 int Pagination::perPage() const
@@ -70,7 +69,6 @@ QString Pagination::cursorValue() const
 
 void Pagination::setPerPage(int perPage)
 {
-    qDebug() << "per page set" << perPage;
     if (m_perPage == perPage)
         return;
 

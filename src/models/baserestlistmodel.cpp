@@ -1,10 +1,11 @@
 #include "baserestlistmodel.h"
+#include <QtQml>
 
 BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_sort("-id"),
     m_roleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle), m_detailRoleNamesGenerated(false)
 {
-    restapi.setAccept(accept());
-    connect(&restapi,SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)), this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
+    apiInstance()->setAccept(accept());
+    connect(apiInstance(),SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)), this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
 }
 
 void BaseRestListModel::declareQML()
@@ -69,8 +70,6 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         break;
     }
 
-    qDebug() << "fetchMore";
-
     switch(m_pagination.policy()) {
     case Pagination::PageNumber: {
         int nextPage = m_pagination.currentPage()+1;
@@ -90,6 +89,8 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         m_pagination.setCursorValue(cursor);
         break;
     }
+    default:
+        break;
     }
 
     QNetworkReply *reply = fetchMoreImpl(parent);
@@ -99,15 +100,13 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
 void BaseRestListModel::fetchMoreFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (restapi.checkReplyIsError(reply) || !reply->isFinished()) {
+    if (apiInstance()->checkReplyIsError(reply) || !reply->isFinished()) {
         return;
     }
 
     if (this->loadingStatus() == LoadingStatus::Idle) {
         return;
     }
-
-    qDebug() << "fetchMoreFinished";
 
     updateHeadersData(reply);
 
@@ -155,7 +154,6 @@ void BaseRestListModel::fetchMoreFinished()
 
 void BaseRestListModel::fetchDetail(QString id)
 {
-    qDebug() << "fetchDetail";
     m_fetchDetailLastId = id;
     RestItem item = findItemById(id);
     if (item.isUpdated()) {
@@ -179,9 +177,8 @@ void BaseRestListModel::fetchDetail(QString id)
 
 void BaseRestListModel::fetchDetailFinished()
 {
-    qDebug() << "fetchDetailFinished";
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (restapi.checkReplyIsError(reply) || !reply->isFinished()) {
+    if (apiInstance()->checkReplyIsError(reply) || !reply->isFinished()) {
         return;
     }
 
@@ -196,8 +193,6 @@ void BaseRestListModel::fetchDetailFinished()
     generateDetailsRoleNames(item);
 
     detailsModel()->setSourceModel(this);
-
-    //qDebug() << item << roleNames();
 
     setLoadingStatus(LoadingStatus::IdleDetails);
 }
@@ -214,7 +209,7 @@ void BaseRestListModel::setLoadingStatus(BaseRestListModel::LoadingStatus loadin
 
 void BaseRestListModel::setAccept(QString accept)
 {
-    restapi.setAccept(accept);
+    apiInstance()->setAccept(accept);
 }
 
 void BaseRestListModel::setLoadingErrorString(QString loadingErrorString)
@@ -261,13 +256,11 @@ RestItem BaseRestListModel::findItemById(QString id)
 
 void BaseRestListModel::updateItem(QVariantMap value)
 {
-    //qDebug() << value;
     RestItem item = findItemById(fetchDetailLastId());
     int row = m_items.indexOf(item);
     item.update(value);
     m_items.replace(row, item);
     emit dataChanged(index(row),index(row));
-    qDebug() << "UPDATED" << row << item.id();
 }
 
 QVariant BaseRestListModel::data(const QModelIndex &index, int role) const
@@ -278,9 +271,6 @@ QVariant BaseRestListModel::data(const QModelIndex &index, int role) const
     }
 
     RestItem item = m_items.at(index.row());
-
-    qDebug() << role << index.row() << m_roleNames[role] << item.id() << item.value("longDescription") << item.value(m_roleNames[role]) << item.keys();
-
     return item.value(m_roleNames[role]);
 }
 
@@ -341,9 +331,9 @@ Pagination *BaseRestListModel::pagination()
     return &m_pagination;
 }
 
-QByteArray BaseRestListModel::accept() const
+QByteArray BaseRestListModel::accept()
 {
-    return restapi.accept();
+    return apiInstance()->accept();
 }
 
 int BaseRestListModel::count() const
@@ -480,4 +470,9 @@ void BaseRestListModel::setIdField(QString idField)
 
     m_idField = idField;
     emit idFieldChanged(idField);
+}
+
+APIBase *BaseRestListModel::apiInstance()
+{
+    return new APIBase();
 }

@@ -1,12 +1,11 @@
 #ifndef BASERESTLISTMODEL_H
 #define BASERESTLISTMODEL_H
 
-#include "api/api.h"
 #include <QAbstractListModel>
-//#include <QtQml>
 #include "restitem.h"
 #include "pagination.h"
 #include "detailsmodel.h"
+#include "apibase.h"
 
 class QNetworkReply;
 class DetailsModel;
@@ -71,7 +70,7 @@ public:
     QString fetchDetailLastId() const;
     DetailsModel *detailsModel();
     Pagination *pagination();
-    QByteArray accept() const;
+    QByteArray accept();
     int count() const;
 
     //Overloaded system methdos
@@ -119,6 +118,8 @@ protected:
     virtual QVariantList getVariantList(QByteArray bytes) = 0;
     //for parse details for one element, reimplemented in JSON and XML models
     virtual QVariantMap getVariantMap(QByteArray bytes) = 0;
+    //Singleton API instance for models for one external API service
+    virtual APIBase *apiInstance();
 
     //Update specific headers on updating
     void updateHeadersData(QNetworkReply *reply);
