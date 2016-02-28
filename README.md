@@ -1,14 +1,19 @@
-# qtrest
-Qt Micro REST Framework
+# Qt Micro REST Client Framework
 
-Note: library under development, and incomplete!
+Qt Micro REST Client Framework - small and simple REST API client for any Qt/QML application.
+Library support standard JSON and XML REST APIs.
 
-Qt Micro REST Framework - small and simple REST API client for Qt and QML. This library support standard JSON and XML REST APIs.
-
-Our features:
-- Deseralization JSON/XML data to QVariant;
-- Based on standard QAbstractListModel, with fetchMore and canFetchMore support;
+## Features
+- Based on QAbstractListModel with fetchMore and canFetchMore support;
+- Support JSON and XML list data;
+- Pagination by per page, limit/offset or cursor;
+- Sorting data;
+- Filtering data;
+- StackView navigation;
+- Separate loading list and details data;
 - Support for Yii2 REST and Django REST Framework from the box;
 - Separate model and API methods;
-- Simple API implementation for your apps.
-- comming soon...
+- Simple API implementation for your apps;
+- State based model information;
+- Requires ID field for each record;
+- Interfaces from C++ and Qt Quick/QML.
