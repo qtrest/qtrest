@@ -259,7 +259,7 @@ QVariantMap CouponModel::preProcessItem(QVariantMap item)
 ```
 At this point we alredy full implemented our API and model. For use it from C++ you may use this model as is.
 For use it from QML you must to add some code to `main.cpp`:
-```
+``` С++
 #include "api/models/couponmodel.h"
 ...
 int main(int argc, char *argv[])
