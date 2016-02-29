@@ -37,7 +37,7 @@ I will made fully functionality example application, available at here: https://
 ## Usage
 Usage library is simplest as it possible. I will show howto use it on my real example project.
 
-#### Include library to your project
+#### 1. Include library to your project
 First, clone library
 ```
 mkdir PROJECT_ROOT/api/
@@ -46,7 +46,7 @@ git clone https://github.com/kafeg/qtrest.git
 ```
 Then add `include (api/qtrest/qtrest.pri)` to your project file.
 
-#### Create your own API class
+#### 2. Create your own API class
 After setup library we must create class API inherited from existing APIBase, e.g. `api/api.h` and `api/api.cpp`:
 ``` C++
 #ifndef SKIDKZAPI_H
@@ -157,7 +157,7 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
 }
 ```
 
-#### Create your model classes, based on your API
+#### 3. Create your model classes, based on your API
 For example we create one model, but you may use one API class for multiple models. E.g. you may use one API class for get list of coupons and for list of categories.
 
 You model class must reimplement 6 methods:
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-### Use model from QML
+#### 4. Use model from QML
 At first, we must declare our model:
 ``` QML
 import ru.forsk.coupons 1.0
@@ -341,6 +341,10 @@ ListView {
     }
 }
 ```
+
+## Additional usage
+
+#### 1. DetailsView page
 Also, we have full support for StackView navigation by special 'details model' available in each your model, based on QSortFilterModel and using 'ID' field as filter. For example, we have ListView in one Stack element, and DrtailView in other stack element.
 We may fetch details info for one of elements and send this element into Details page, when we may use simple hack for display one element with detail info:
 ``` QML
