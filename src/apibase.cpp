@@ -54,6 +54,79 @@ bool APIBase::checkReplyIsError(QNetworkReply *reply)
     }
 }
 
+QByteArray APIBase::accept() const
+{
+    return m_accept;
+}
+
+QByteArray APIBase::baseUrl() const
+{
+    return m_baseUrl;
+}
+
+QByteArray APIBase::acceptHeader() const
+{
+    return m_acceptHeader;
+}
+
+QByteArray APIBase::authToken() const
+{
+    return m_authToken;
+}
+
+QByteArray APIBase::authTokenHeader() const
+{
+    return m_authTokenHeader;
+}
+
+void APIBase::setAccept(QString accept)
+{
+    QByteArray newData;
+    newData.append(accept);
+
+    if (m_accept == newData)
+        return;
+
+    m_accept = newData;
+    emit acceptChanged(newData);
+}
+
+void APIBase::setBaseUrl(QByteArray baseUrl)
+{
+    if (m_baseUrl == baseUrl)
+        return;
+
+    m_baseUrl = baseUrl;
+    emit baseUrlChanged(baseUrl);
+}
+
+void APIBase::setAcceptHeader(QByteArray acceptHeader)
+{
+    if (m_acceptHeader == acceptHeader)
+        return;
+
+    m_acceptHeader = acceptHeader;
+    emit acceptHeaderChanged(acceptHeader);
+}
+
+void APIBase::setAuthToken(QByteArray authToken)
+{
+    if (m_authToken == authToken)
+        return;
+
+    m_authToken = authToken;
+    emit authTokenChanged(authToken);
+}
+
+void APIBase::setAuthTokenHeader(QByteArray authTokenHeader)
+{
+    if (m_authTokenHeader == authTokenHeader)
+        return;
+
+    m_authTokenHeader = authTokenHeader;
+    emit authTokenHeaderChanged(authTokenHeader);
+}
+
 QNetworkReply *APIBase::get(QUrl url)
 {
     QNetworkRequest request(url);
@@ -64,3 +137,102 @@ QNetworkReply *APIBase::get(QUrl url)
     return reply;
 }
 
+QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->post(request, data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::post(QUrl url,const QByteArray &data)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->post(request, data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::post(QUrl url, QHttpMultiPart *multiPart)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->post(request, multiPart);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::put(QUrl url, QIODevice *data)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->put(request, data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::put(QUrl url, const QByteArray &data)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->put(request, data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::put(QUrl url, QHttpMultiPart *multiPart)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->put(request, multiPart);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::deleteResource(QUrl url)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->deleteResource(request);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::head(QUrl url)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->head(request);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::options(QUrl url)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request,"OPTIONS");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url)
+{
+    QNetworkRequest request(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request,"PATCH");
+    connectReplyToErrors(reply);
+    return reply;
+}

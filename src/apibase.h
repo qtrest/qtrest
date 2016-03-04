@@ -7,6 +7,7 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QHttpMultiPart;
 
 class APIBase : public QObject
 {
@@ -25,79 +26,18 @@ public:
     Q_PROPERTY(QByteArray authTokenHeader READ authTokenHeader WRITE setAuthTokenHeader NOTIFY authTokenHeaderChanged)
     //--------------------
 
-    QByteArray accept() const
-    {
-        return m_accept;
-    }
-
-    QByteArray baseUrl() const
-    {
-        return m_baseUrl;
-    }
-
-    QByteArray acceptHeader() const
-    {
-        return m_acceptHeader;
-    }
-
-    QByteArray authToken() const
-    {
-        return m_authToken;
-    }
-
-    QByteArray authTokenHeader() const
-    {
-        return m_authTokenHeader;
-    }
+    QByteArray baseUrl() const;
+    QByteArray accept() const;
+    QByteArray acceptHeader() const;
+    QByteArray authToken() const;
+    QByteArray authTokenHeader() const;
 
 public slots:
-    void setAccept(QString accept)
-    {
-        QByteArray newData;
-        newData.append(accept);
-
-        if (m_accept == newData)
-            return;
-
-        m_accept = newData;
-        emit acceptChanged(newData);
-    }
-
-    void setBaseUrl(QByteArray baseUrl)
-    {
-        if (m_baseUrl == baseUrl)
-            return;
-
-        m_baseUrl = baseUrl;
-        emit baseUrlChanged(baseUrl);
-    }
-
-    void setAcceptHeader(QByteArray acceptHeader)
-    {
-        if (m_acceptHeader == acceptHeader)
-            return;
-
-        m_acceptHeader = acceptHeader;
-        emit acceptHeaderChanged(acceptHeader);
-    }
-
-    void setAuthToken(QByteArray authToken)
-    {
-        if (m_authToken == authToken)
-            return;
-
-        m_authToken = authToken;
-        emit authTokenChanged(authToken);
-    }
-
-    void setAuthTokenHeader(QByteArray authTokenHeader)
-    {
-        if (m_authTokenHeader == authTokenHeader)
-            return;
-
-        m_authTokenHeader = authTokenHeader;
-        emit authTokenHeaderChanged(authTokenHeader);
-    }
+    void setBaseUrl(QByteArray baseUrl);
+    void setAccept(QString accept);
+    void setAcceptHeader(QByteArray acceptHeader);
+    void setAuthToken(QByteArray authToken);
+    void setAuthTokenHeader(QByteArray authTokenHeader);
 
 signals:
     void replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString);
@@ -111,6 +51,16 @@ signals:
 
 protected:
     QNetworkReply *get(QUrl url);
+    QNetworkReply *post(QUrl url, QIODevice *data);
+    QNetworkReply *post(QUrl url, const QByteArray &data);
+    QNetworkReply *post(QUrl url, QHttpMultiPart *multiPart);
+    QNetworkReply *put(QUrl url, QIODevice *data);
+    QNetworkReply *put(QUrl url, const QByteArray &data);
+    QNetworkReply *put(QUrl url, QHttpMultiPart *multiPart);
+    QNetworkReply *deleteResource(QUrl url);
+    QNetworkReply *head(QUrl url);
+    QNetworkReply *options(QUrl url);
+    QNetworkReply *patch(QUrl url);
 
     QNetworkAccessManager *manager;
 
