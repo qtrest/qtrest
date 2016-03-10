@@ -1,6 +1,6 @@
 {
   "name": "com.github.qtrest",
-  "description": "",
+  "description": "Qt Micro REST Client Framework - auto mapping REST data to QAbstractListModel",
   "author": {
     "name": "Vitaliy Petrov",
     "email": "v31337@gmail.com"
@@ -18,5 +18,5 @@
   ],
   "license": "MIT",
   "pri_filename": "com_github_qtrest.pri",
-  "webpage": ""
+  "webpage": "https://github.com/kafeg/qtrest"
 }
