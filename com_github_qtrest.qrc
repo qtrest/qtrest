@@ -1,0 +1,6 @@
+
+<RCC>
+    <qresource prefix="/com/github/qtrest">
+        <file>qmldir</file>
+    </qresource>
+</RCC>

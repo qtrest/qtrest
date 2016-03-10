@@ -20,3 +20,7 @@ INCLUDEPATH += $$PWD/src/
 INCLUDEPATH += $$PWD/src/models/
 
 OTHER_FILES += $$PWD/README.md $$PWD/LICENSE $$PWD/QtMicroRestFramework.qmodel
+
+RESOURCES += \
+    $$PWD/com_github_qtrest.qrc
+	

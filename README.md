@@ -188,7 +188,7 @@ public:
 
     static void declareQML() {
         JsonRestListModel::declareQML();
-        qmlRegisterType<CouponModel>("ru.forsk.coupons", 1, 0, "CouponModel");
+        qmlRegisterType<CouponModel>("com.github.qtrest.coupons", 1, 0, "CouponModel");
     }
 protected:
     QNetworkReply *fetchMoreImpl(const QModelIndex &parent);
@@ -274,8 +274,8 @@ int main(int argc, char *argv[])
 #### 4. Use model from QML
 At first, we must declare our model:
 ``` QML
-import ru.forsk.coupons 1.0
-import ru.forsk.pagination 1.0
+import com.github.qtrest.coupons 1.0
+import com.github.qtrest.pagination 1.0
 
 ...
 
@@ -350,7 +350,7 @@ We may fetch details info for one of elements and send this element into Details
 ``` QML
 import QtQuick 2.6
 import Qt.labs.controls 1.0
-import ru.forsk.coupons 1.0
+import com.github.qtrest.coupons 1.0
 
 Item {
     id: details

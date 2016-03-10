@@ -11,7 +11,7 @@ BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(paren
 void BaseRestListModel::declareQML()
 {
     qRegisterMetaType<DetailsModel*>("DetailsModel*");
-    qmlRegisterType<Pagination>("ru.forsk.pagination", 1, 0, "Pagination");
+    qmlRegisterType<Pagination>("com.github.qtrest.pagination", 1, 0, "Pagination");
 }
 
 void BaseRestListModel::reload()

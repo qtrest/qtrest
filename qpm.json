@@ -1,0 +1,22 @@
+{
+  "name": "com.github.qtrest",
+  "description": "",
+  "author": {
+    "name": "Vitaliy Petrov",
+    "email": "v31337@gmail.com"
+  },
+  "repository": {
+    "type": "GITHUB",
+    "url": "https://github.com/kafeg/qtrest.git"
+  },
+  "version": {
+    "label": "0.1.0",
+    "revision": "",
+    "fingerprint": ""
+  },
+  "dependencies": [
+  ],
+  "license": "MIT",
+  "pri_filename": "com_github_qtrest.pri",
+  "webpage": ""
+}
