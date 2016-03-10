@@ -38,13 +38,17 @@ I will made fully functionality example application, available at here: https://
 Usage library is simplest as it possible. I will show howto use it on my real example project.
 
 #### 1. Include library to your project
-First, clone library
+
+You may use qpm(https://github.com/Cutehacks/qpm):
+qpm install com.github.qtrest
+
+Or you may include library manualy. First, clone library
 ```
 mkdir PROJECT_ROOT/api/
 cd PROJECT_ROOT/api/
 git clone https://github.com/kafeg/qtrest.git
 ```
-Then add `include (api/qtrest/qtrest.pri)` to your project file.
+Then add `include (api/qtrest/com_github_qtrest.pri)` to your project file.
 
 #### 2. Create your own API class
 After setup library we must create class API inherited from existing APIBase, e.g. `api/api.h` and `api/api.cpp`:
