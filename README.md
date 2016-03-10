@@ -40,7 +40,9 @@ Usage library is simplest as it possible. I will show howto use it on my real ex
 #### 1. Include library to your project
 
 You may use qpm(https://github.com/Cutehacks/qpm):
+```
 qpm install com.github.qtrest
+```
 
 Or you may include library manualy. First, clone library
 ```
