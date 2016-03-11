@@ -41,7 +41,7 @@ Usage library is simplest as it possible. I will show howto use it on my real ex
 
 You may use qpm(https://github.com/Cutehacks/qpm):
 ```
-qpm install com.github.qtrest
+qpm install com.github.kafeg.qtrest
 ```
 
 Or you may include library manualy. First, clone library
