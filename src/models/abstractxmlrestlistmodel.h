@@ -5,11 +5,11 @@
 
 class QNetworkReply;
 
-class XmlRestListModel : public BaseRestListModel
+class AbstractXmlRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
-    explicit XmlRestListModel(QObject *parent = 0);
+    explicit AbstractXmlRestListModel(QObject *parent = 0);
 
     Q_PROPERTY(QString rootElement READ rootElement WRITE setRootElement NOTIFY rootElementChanged)
     Q_PROPERTY(QString itemElement READ itemElement WRITE setItemElement NOTIFY itemElementChanged)

@@ -5,11 +5,11 @@
 
 class QNetworkReply;
 
-class JsonRestListModel : public BaseRestListModel
+class AbstractJsonRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
-    explicit JsonRestListModel(QObject *parent = 0);
+    explicit AbstractJsonRestListModel(QObject *parent = 0);
 
 private:
     //for get list
