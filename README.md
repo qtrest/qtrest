@@ -60,10 +60,9 @@ After setup library we must create class API inherited from existing APIBase, e.
 #define SKIDKZAPI_H
 
 #include "apibase.h"
-#include "usingleton.h"
 #include <QtQml>
 
-class SkidKZApi : public APIBase, public uSingleton<SkidKZApi>
+class SkidKZApi : public APIBase
 {
     Q_OBJECT
 public:
@@ -90,6 +89,18 @@ And implement this class:
 SkidKZApi::SkidKZApi() : APIBase(0), uSingleton<SkidKZApi>(*this)
 {
 
+}
+
+//For handle all requests from QML components JsonRestListModel or XmlRestListModel
+QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Pagination *pagination,
+                                  QVariantMap filters, QStringList fields, QString id)
+{
+    if (path == "/v1/coupon") {
+        return getCoupons(sort, pagination, filters, fields);
+    }
+    else if ("/v1/coupon/{id}") {
+        return getCouponDetail(id);
+    }
 }
 
 //In this methods we get list of objects, based on specified page number, filters, sort and fileds list.
@@ -160,8 +171,50 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
 }
 ```
 
-#### 3. Create your model classes, based on your API
+#### 3. Create your model classes or use completed components, based on your API
+
+##### 3.1 Completed components
+
+For simple readonly models you may use complete QML data components called JsonRestListModel {} and XmlRestListModel {}. You hasn't access to manipulate data in this models and pre process items, but by using it you may to skip defining custom C++ models.
+
+For example, start in your QML code:
+
+```
+...
+
+SkidKZApi {
+    id: skidKZApi
+    ...
+}
+
+    JsonRestListModel {
+        id: jsonCouponsModel
+        api: skidKZApi
+
+        idField: 'id'
+
+        requests {
+            get: "/v1/coupon"
+            getDetails: "/v1/coupon/{id}"
+        }
+
+        filters: {'isArchive': '0'}
+        fields: ['id','title']
+        sort: ['-id']
+
+        pagination {
+            policy: Pagination.PageNumber
+            perPage: 20
+        }
+
+        Component.onCompleted: { reload(); }
+    }
+```
+
+##### 3.2 Custom models
 For example we create one model, but you may use one API class for multiple models. E.g. you may use one API class for get list of coupons and for list of categories.
+
+At this point you have full control on your rest data.
 
 You model class must reimplement 6 methods:
 ```
