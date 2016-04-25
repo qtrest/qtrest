@@ -187,28 +187,28 @@ SkidKZApi {
     ...
 }
 
-    JsonRestListModel {
-        id: jsonCouponsModel
-        api: skidKZApi
+JsonRestListModel {
+    id: jsonCouponsModel
+    api: skidKZApi
 
-        idField: 'id'
+    idField: 'id'
 
-        requests {
-            get: "/v1/coupon"
-            getDetails: "/v1/coupon/{id}"
-        }
-
-        filters: {'isArchive': '0'}
-        fields: ['id','title']
-        sort: ['-id']
-
-        pagination {
-            policy: Pagination.PageNumber
-            perPage: 20
-        }
-
-        Component.onCompleted: { reload(); }
+    requests {
+        get: "/v1/coupon"
+        getDetails: "/v1/coupon/{id}"
     }
+
+    filters: {'isArchive': '0'}
+    fields: ['id','title']
+    sort: ['-id']
+
+    pagination {
+        policy: Pagination.PageNumber
+        perPage: 20
+    }
+
+    Component.onCompleted: { reload(); }
+}
 ```
 
 ##### 3.2 Custom models
