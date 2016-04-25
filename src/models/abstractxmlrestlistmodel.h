@@ -1,5 +1,5 @@
-#ifndef XMLRESTLISTMODEL_H
-#define XMLRESTLISTMODEL_H
+#ifndef ABSXMLRESTLISTMODEL_H
+#define ABSXMLRESTLISTMODEL_H
 
 #include "baserestlistmodel.h"
 
@@ -57,4 +57,4 @@ private:
     QString m_itemElement;
 };
 
-#endif // XMLRESTLISTMODEL_H
+#endif // ABSXMLRESTLISTMODEL_H

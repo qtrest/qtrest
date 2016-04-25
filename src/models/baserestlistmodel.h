@@ -17,6 +17,8 @@ class BaseRestListModel : public QAbstractListModel
 public:
     BaseRestListModel(QObject *parent = 0);
 
+    Q_PROPERTY(APIBase *api READ apiInstance WRITE setApiInstance NOTIFY apiInstanceChanged)
+
     //--------------------
     //Standard HATEOAS REST API params (https://en.wikipedia.org/wiki/HATEOAS, for example: https://github.com/yiisoft/yii2/blob/master/docs/guide-ru/rest-quick-start.md)
     //Specify sorting fields
@@ -87,6 +89,7 @@ signals:
     void fieldsChanged(QStringList fields);
     void idFieldChanged(QString idField);
     void acceptChanged(QByteArray accept);
+    void apiInstanceChanged(APIBase *apiInstance);
 
 public slots:
     void reload();
@@ -107,6 +110,8 @@ public slots:
     void setFields(QStringList fields);
     void setIdField(QString idField);
 
+    void setApiInstance(APIBase *apiInstance);
+
 protected:
     //reimplement this for call specific API method GET list
     virtual QNetworkReply *fetchMoreImpl(const QModelIndex &parent) = 0;
@@ -118,8 +123,8 @@ protected:
     virtual QVariantList getVariantList(QByteArray bytes) = 0;
     //for parse details for one element, reimplemented in JSON and XML models
     virtual QVariantMap getVariantMap(QByteArray bytes) = 0;
-    //Singleton API instance for models for one external API service
-    virtual APIBase *apiInstance();
+    //API instance for models for one external API service
+    APIBase *apiInstance();
 
     //Update specific headers on updating
     void updateHeadersData(QNetworkReply *reply);
@@ -165,6 +170,7 @@ private:
     QString m_fetchDetailLastId;
     DetailsModel m_detailsModel;
     Pagination m_pagination;
+    APIBase *m_apiInstance;
 };
 
 #endif // BASERESTLISTMODEL_H

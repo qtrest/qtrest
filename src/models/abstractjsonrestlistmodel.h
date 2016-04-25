@@ -1,5 +1,5 @@
-#ifndef JSONRESTLISTMODEL_H
-#define JSONRESTLISTMODEL_H
+#ifndef ABSJSONRESTLISTMODEL_H
+#define ABSJSONRESTLISTMODEL_H
 
 #include "baserestlistmodel.h"
 
@@ -19,4 +19,4 @@ private:
     QVariantMap getVariantMap(QByteArray bytes);
 };
 
-#endif // JSONRESTLISTMODEL_H
+#endif // ABSJSONRESTLISTMODEL_H

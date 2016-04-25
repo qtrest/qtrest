@@ -1,4 +1,4 @@
-# Qt REST Client  (Beta)
+# Qt / QML REST Client  (Beta)
 
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
@@ -23,7 +23,8 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - State based model information;
 - Requires ID field for each record;
 - Interfaces from C++ and Qt Quick/QML;
-- Multiple external API services in different models.
+- Multiple external API services in different models;
+- Predefined or custom model classes
 
 ![Qt Micro REST Client Framework](https://raw.githubusercontent.com/kafeg/qtrest/master/docs/restapi.png "REST API Scheme")
 
@@ -88,11 +89,7 @@ And implement this class:
 
 SkidKZApi::SkidKZApi() : APIBase(0), uSingleton<SkidKZApi>(*this)
 {
-    //Base URL used for all API calls for this example
-    setBaseUrl("http://api.skid.kz");
 
-    //You may specify auth token for each API call. And you may write your own api method for authetification
-    setAuthToken("Bearer 8aef452ee3b32466209535b96d456b06");
 }
 
 //In this methods we get list of objects, based on specified page number, filters, sort and fileds list.
@@ -172,7 +169,6 @@ You model class must reimplement 6 methods:
 - fetchMoreImpl(); //Call API fucntion for fetchMore function (e.g. getCoupons())
 - fetchDetailImpl(); //Call API fucntion for fetchDetails for one item (e.g. getCouponDetail())
 - preProcessItem(); //Pre proccess each new list item for manage field list
-- apiInstance(); //Make your API implementation available for base classes
 ```
 
 For example we make Coupons model from our example app (api/models/couponmodel.h):
@@ -200,8 +196,6 @@ protected:
     QNetworkReply *fetchMoreImpl(const QModelIndex &parent);
     QNetworkReply *fetchDetailImpl(QString id);
     QVariantMap preProcessItem(QVariantMap item);
-
-    APIBase *apiInstance();
 };
 
 #endif // COUPONMODEL_H
@@ -215,20 +209,18 @@ CouponModel::CouponModel(QObject *parent) : JsonRestListModel(parent)
 
 }
 
-APIBase *CouponModel::apiInstance()
-{
-    return &SkidKZApi::instance();
-}
-
 QNetworkReply *CouponModel::fetchMoreImpl(const QModelIndex &parent)
 {
-    return SkidKZApi::instance().getCoupons(sort(), pagination(), filters(), fields());
+    Q_UNUSED(parent)
+
+    return static_cast<SkidKZApi *>(apiInstance())->getCoupons(sort(), pagination(), filters(), fields());
 }
 
 QNetworkReply *CouponModel::fetchDetailImpl(QString id)
 {
-    return SkidKZApi::instance().getCouponDetail(id);
+    return static_cast<SkidKZApi *>(apiInstance())->getCouponDetail(id);
 }
+
 
 //Data management and preparation is function of Backend developer, but if he or she 
 //is do not want to deal with data preparation, you may to prepare each item yourself
@@ -238,27 +230,7 @@ QVariantMap CouponModel::preProcessItem(QVariantMap item)
                                         "yyyy-MM-dd hh:mm:ss").date();
     item.insert("createDate", date.toString("dd.MM.yyyy"));
 
-    QString originalCouponPrice = item.value("originalCouponPrice").toString().trimmed();
-    if (originalCouponPrice.isEmpty()) { originalCouponPrice = "?"; }
-    QString discountPercent = item.value("discountPercent").toString()
-    .trimmed().remove("—").remove("-").remove("%");
-    if (discountPercent.isEmpty()) { discountPercent = "?"; }
-    QString originalPrice = item.value("originalPrice").toString().trimmed();
-    if (originalPrice.isEmpty()) { originalPrice = "?"; }
-    QString discountPrice = item.value("discountPrice").toString().remove("тг.").trimmed();
-    if (discountPrice.isEmpty()) { discountPrice = "?"; }
-
-    QString discountType = item.value("discountType").toString();
-    QString discountString = tr("Undefined Type");
-    if (discountType == "freeCoupon" || discountType == "coupon") {
-        discountString = tr("Coupon: %1. Discount: %2%")
-        .arg(originalCouponPrice).arg(discountPercent);
-    } else if (discountType == "full") {
-        discountString = tr("Cost: %1. Certificate: %2. Discount: %3%")
-        .arg(originalPrice).arg(discountPrice).arg(discountPercent);
-    }
-
-    item.insert("discountString", discountString);
+    ...
 
     return item;
 }
@@ -271,7 +243,8 @@ For use it from QML you must to add some code to `main.cpp`:
 int main(int argc, char *argv[])
 {
     ...
-    //models
+    //api and models
+    SkidKZApi::declareQML();
     CouponModel::declareQML();
     ...
 }
@@ -280,13 +253,27 @@ int main(int argc, char *argv[])
 #### 4. Use model from QML
 At first, we must declare our model:
 ``` QML
+import com.github.qtrestexample.skidkzapi 1.0
 import com.github.qtrest.coupons 1.0
 import com.github.qtrest.pagination 1.0
 
 ...
 
+SkidKZApi {
+    id: skidKZApi
+
+    baseUrl: "http://api.skid.kz"
+
+    authTokenHeader: "Authorization"
+    authToken: "Bearer 8aef452ee3b32466209535b96d456b06"
+
+    Component.onCompleted: console.log("completed!");
+}
+
+...
 CouponModel {
         id: coupons;
+        api: skidKZApi
         
         //Note: only if our APi support filtering
         //Specify base filter, than we make filters form and set filters dynamicaly
@@ -348,7 +335,7 @@ ListView {
 }
 ```
 
-## Additional usage
+## Advanced usage
 
 #### 1. DetailsView page
 Also, we have full support for StackView navigation by special 'details model' available in each your model, based on QSortFilterModel and using 'ID' field as filter. For example, we have ListView in one Stack element, and DrtailView in other stack element.

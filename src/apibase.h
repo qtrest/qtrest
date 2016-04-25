@@ -16,6 +16,7 @@ public:
     explicit APIBase(QObject *parent = 0);
     bool checkReplyIsError(QNetworkReply *reply);
 
+    //Accept header for JSON/XML data
     Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
     Q_PROPERTY(QByteArray acceptHeader READ acceptHeader WRITE setAcceptHeader NOTIFY acceptHeaderChanged)
     //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
@@ -32,6 +33,18 @@ public:
     QByteArray authToken() const;
     QByteArray authTokenHeader() const;
 
+    virtual QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
+                                         QVariantMap filters = QVariantMap(),
+                                         QStringList fields = QStringList(), QString id = 0) {
+        Q_UNUSED(path)
+        Q_UNUSED(sort)
+        Q_UNUSED(pagination)
+        Q_UNUSED(filters)
+        Q_UNUSED(fields)
+        Q_UNUSED(id)
+        return 0;
+    };
+
 public slots:
     void setBaseUrl(QByteArray baseUrl);
     void setAccept(QString accept);
@@ -44,9 +57,7 @@ signals:
     void acceptChanged(QByteArray accept);
     void baseUrlChanged(QByteArray baseUrl);
     void acceptHeaderChanged(QByteArray acceptHeader);
-
     void authTokenChanged(QByteArray authToken);
-
     void authTokenHeaderChanged(QByteArray authTokenHeader);
 
 protected:

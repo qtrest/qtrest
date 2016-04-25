@@ -2,10 +2,9 @@
 #include <QtQml>
 
 BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_sort("-id"),
-    m_roleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle), m_detailRoleNamesGenerated(false)
+    m_roleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle), m_detailRoleNamesGenerated(false), m_apiInstance(nullptr)
 {
-    apiInstance()->setAccept(accept());
-    connect(apiInstance(),SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)), this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
+
 }
 
 void BaseRestListModel::declareQML()
@@ -472,7 +471,24 @@ void BaseRestListModel::setIdField(QString idField)
     emit idFieldChanged(idField);
 }
 
+void BaseRestListModel::setApiInstance(APIBase *apiInstance)
+{
+    if (m_apiInstance == apiInstance)
+        return;
+
+    m_apiInstance = apiInstance;
+
+    m_apiInstance->setAccept(accept());
+    connect(m_apiInstance,SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)),
+            this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
+
+    emit apiInstanceChanged(apiInstance);
+}
+
 APIBase *BaseRestListModel::apiInstance()
 {
-    return new APIBase();
+    if (m_apiInstance == nullptr) {
+        return new APIBase();
+    }
+    return m_apiInstance;
 }

@@ -1,14 +1,14 @@
-#include "xmlrestlistmodel.h"
+#include "abstractxmlrestlistmodel.h"
 
 #include <QNetworkReply>
 #include <QXmlStreamReader>
 
-XmlRestListModel::XmlRestListModel(QObject *parent) : BaseRestListModel(parent)
+AbstractXmlRestListModel::AbstractXmlRestListModel(QObject *parent) : BaseRestListModel(parent)
 {
     setAccept("application/xml");
 }
 
-QVariantList XmlRestListModel::getVariantList(QByteArray bytes)
+QVariantList AbstractXmlRestListModel::getVariantList(QByteArray bytes)
 {
     QString str = QString::fromUtf8(bytes.data(), bytes.size());
 
@@ -101,7 +101,7 @@ QVariantList XmlRestListModel::getVariantList(QByteArray bytes)
     return list;
 }
 
-QVariantMap XmlRestListModel::getVariantMap(QByteArray bytes)
+QVariantMap AbstractXmlRestListModel::getVariantMap(QByteArray bytes)
 {
     QString str = QString::fromUtf8(bytes.data(), bytes.size());
 
