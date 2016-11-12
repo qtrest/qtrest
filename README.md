@@ -42,12 +42,7 @@ Usage library is simplest as it possible. I will show howto use it on my real ex
 
 #### 1. Include library to your project
 
-You may use qpm(https://github.com/Cutehacks/qpm) on Ubuntu/Mac OS (not for Windwows):
-```
-qpm install com.github.kafeg.qtrest
-```
-
-Also you may clone and include library manualy. First, clone library
+First, clone library.
 ```
 mkdir PROJECT_ROOT/api/
 cd PROJECT_ROOT/api/
