@@ -3,6 +3,8 @@
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
 
+Manual in russian: https://habrahabr.ru/post/314984
+
 By default library support standard Yii2 REST API and Django REST Framework. Read more:
 - English: https://github.com/yiisoft/yii2/blob/master/docs/guide/rest-quick-start.md
 - Russian: https://github.com/yiisoft/yii2/blob/master/docs/guide-ru/rest-quick-start.md
@@ -40,12 +42,12 @@ Usage library is simplest as it possible. I will show howto use it on my real ex
 
 #### 1. Include library to your project
 
-You may use qpm(https://github.com/Cutehacks/qpm):
+You may use qpm(https://github.com/Cutehacks/qpm) on Ubuntu/Mac OS (not for Windwows):
 ```
 qpm install com.github.kafeg.qtrest
 ```
 
-Or you may include library manualy. First, clone library
+Also you may clone and include library manualy. First, clone library
 ```
 mkdir PROJECT_ROOT/api/
 cd PROJECT_ROOT/api/
@@ -66,15 +68,26 @@ class SkidKZApi : public APIBase
 {
     Q_OBJECT
 public:
-    SkidKZApi();
+    Q_INVOKABLE explicit SkidKZApi();
 
-    //api methods
-    //get list of objects
-    QNetworkReply *getCoupons(QStringList sort, Pagination *pagination, 
-                                QVariantMap filters = QVariantMap(), 
-                                QStringList fields = QStringList());
-    //get full data for specified item
+    //register API object in QML
+    static void declareQML() {
+        qmlRegisterType<SkidKZApi>("com.github.qtrestexample.skidkzapi", 1, 0, "SkidKZApi");
+    }
+
+    //handle all requests from ReadOnly model
+    QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
+                           QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QString id = 0);
+
+    //Method API /v1/coupon
+    QNetworkReply *getCoupons(QStringList sort, Pagination *pagination,
+                              QVariantMap filters = QVariantMap(), QStringList fields = QStringList());
+    
+    //Method API /v1/coupon/{id}
     QNetworkReply *getCouponDetail(QString id);
+
+    //Method API /v1/categories
+    QNetworkReply *getCategories(QStringList sort, Pagination *pagination);
 };
 
 #endif // SKIDKZAPI_H
@@ -86,38 +99,36 @@ And implement this class:
 #include <QTextStream>
 #include <QUrlQuery>
 
-SkidKZApi::SkidKZApi() : APIBase(0), uSingleton<SkidKZApi>(*this)
+SkidKZApi::SkidKZApi() : APIBase(0)
 {
 
 }
 
-//For handle all requests from QML components JsonRestListModel or XmlRestListModel
 QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Pagination *pagination,
                                   QVariantMap filters, QStringList fields, QString id)
 {
     if (path == "/v1/coupon") {
         return getCoupons(sort, pagination, filters, fields);
     }
-    else if ("/v1/coupon/{id}") {
+    else if (path == "/v1/coupon/{id}") {
         return getCouponDetail(id);
+    }
+    else if (path == "/v1/categories") {
+        return getCategories(sort, pagination);
     }
 }
 
-//In this methods we get list of objects, based on specified page number, filters, sort and fileds list.
-//We can fetch all fields or only needed in our list.
-QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, 
-                                      QVariantMap filters, QStringList fields)
+QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields)
 {
-    //URL and GET parameters
     QUrl url = QUrl(baseUrl()+"/v1/coupon");
     QUrlQuery query;
 
-    //Specify filters GET param
+    //Sorting
     if (!sort.isEmpty()) {
         query.addQueryItem("sort", sort.join(","));
     }
 
-    //Specify pagination. We use pagination type from model.
+    //Paging
     switch(pagination->policy()) {
     case Pagination::PageNumber:
         query.addQueryItem("per-page", QString::number(pagination->perPage()));
@@ -131,9 +142,7 @@ QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination,
         break;
     }
 
-    //if we need to filter our model, we use filters.
-    //Be careful, if you use this methods, your curent pagintaion wil be broken
-    //and you must full reaload your model data when you specify new filters
+    //Filter
     if (!filters.isEmpty()) {
         QMapIterator<QString, QVariant> i(filters);
         while (i.hasNext()) {
@@ -142,20 +151,20 @@ QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination,
         }
     }
 
-    //We may to get all or spicified fields in this method.
+    //Only needed fields
     if (!fields.isEmpty()) {
         query.addQueryItem("fields", fields.join(","));
     }
 
+    //Make query
     url.setQuery(query.query());
 
+    //Make GET request
     QNetworkReply *reply = get(url);
 
     return reply;
 }
 
-//If we fetch e.g. 3 of 10 fields in our 'getCoupons' methods,
-//we may to get full information from needed item by it ID
 QNetworkReply *SkidKZApi::getCouponDetail(QString id)
 {
     if (id.isEmpty()) {
@@ -164,6 +173,35 @@ QNetworkReply *SkidKZApi::getCouponDetail(QString id)
     }
 
     QUrl url = QUrl(baseUrl()+"/v1/coupon/"+id);
+
+    QNetworkReply *reply = get(url);
+
+    return reply;
+}
+
+QNetworkReply *SkidKZApi::getCategories(QStringList sort, Pagination *pagination)
+{
+    QUrl url = QUrl(baseUrl()+"/v1/categories");
+    QUrlQuery query;
+
+    if (!sort.isEmpty()) {
+        query.addQueryItem("sort", sort.join(","));
+    }
+
+    switch(pagination->policy()) {
+    case Pagination::PageNumber:
+        query.addQueryItem("per-page", QString::number(pagination->perPage()));
+        query.addQueryItem("page", QString::number(pagination->currentPage()));
+        break;
+    case Pagination::None:
+    case Pagination::Infinity:
+    case Pagination::LimitOffset:
+    case Pagination::Cursor:
+    default:
+        break;
+    }
+
+    url.setQuery(query.query());
 
     QNetworkReply *reply = get(url);
 
