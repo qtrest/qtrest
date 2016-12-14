@@ -47,10 +47,11 @@ signals:
     void rootElementChanged(QString rootElement);
     void itemElementChanged(QString itemElement);
 
-private:
+protected:
     //for get list
-    QVariantList getVariantList(QByteArray bytes);
+    virtual QVariantList getVariantList(QByteArray bytes);
 
+private:
     //for get details for one element
     QVariantMap getVariantMap(QByteArray bytes);
     QString m_rootElement;
