@@ -129,7 +129,7 @@ void APIBase::setAuthTokenHeader(QByteArray authTokenHeader)
 
 QNetworkReply *APIBase::get(QUrl url)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->get(request);
@@ -139,7 +139,7 @@ QNetworkReply *APIBase::get(QUrl url)
 
 QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->post(request, data);
@@ -149,7 +149,7 @@ QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
 
 QNetworkReply *APIBase::post(QUrl url,const QByteArray &data)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->post(request, data);
@@ -159,7 +159,7 @@ QNetworkReply *APIBase::post(QUrl url,const QByteArray &data)
 
 QNetworkReply *APIBase::post(QUrl url, QHttpMultiPart *multiPart)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->post(request, multiPart);
@@ -169,7 +169,7 @@ QNetworkReply *APIBase::post(QUrl url, QHttpMultiPart *multiPart)
 
 QNetworkReply *APIBase::put(QUrl url, QIODevice *data)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->put(request, data);
@@ -179,7 +179,7 @@ QNetworkReply *APIBase::put(QUrl url, QIODevice *data)
 
 QNetworkReply *APIBase::put(QUrl url, const QByteArray &data)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->put(request, data);
@@ -189,7 +189,7 @@ QNetworkReply *APIBase::put(QUrl url, const QByteArray &data)
 
 QNetworkReply *APIBase::put(QUrl url, QHttpMultiPart *multiPart)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->put(request, multiPart);
@@ -199,7 +199,7 @@ QNetworkReply *APIBase::put(QUrl url, QHttpMultiPart *multiPart)
 
 QNetworkReply *APIBase::deleteResource(QUrl url)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->deleteResource(request);
@@ -209,7 +209,7 @@ QNetworkReply *APIBase::deleteResource(QUrl url)
 
 QNetworkReply *APIBase::head(QUrl url)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->head(request);
@@ -219,7 +219,7 @@ QNetworkReply *APIBase::head(QUrl url)
 
 QNetworkReply *APIBase::options(QUrl url)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->sendCustomRequest(request,"OPTIONS");
@@ -229,10 +229,15 @@ QNetworkReply *APIBase::options(QUrl url)
 
 QNetworkReply *APIBase::patch(QUrl url)
 {
-    QNetworkRequest request(url);
+    QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->sendCustomRequest(request,"PATCH");
     connectReplyToErrors(reply);
     return reply;
+}
+
+QNetworkRequest APIBase::createRequest(const QUrl &url) const
+{
+    return QNetworkRequest(url);
 }
