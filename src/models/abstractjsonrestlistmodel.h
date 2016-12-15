@@ -11,10 +11,11 @@ class AbstractJsonRestListModel : public BaseRestListModel
 public:
     explicit AbstractJsonRestListModel(QObject *parent = 0);
 
-private:
+protected:
     //for get list
-    QVariantList getVariantList(QByteArray bytes);
+    virtual QVariantList getVariantList(QByteArray bytes);
 
+private:
     //for get details for one element
     QVariantMap getVariantMap(QByteArray bytes);
 };
