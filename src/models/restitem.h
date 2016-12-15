@@ -5,11 +5,13 @@
 
 class RestItem {
 public:
+    RestItem();
     explicit RestItem(QVariantMap object, QString idField);
     QVariant value(QString key);
     QStringList keys();
     QString id() const;
     bool isUpdated();
+    bool isValid() const;
 
     void update (QVariantMap value);
 
@@ -18,6 +20,7 @@ private:
     QVariantMap m_object;
     QString m_idField;
     bool m_isUpdated;
+    bool m_isValid;
 };
 
 #endif // RESTITEM_H

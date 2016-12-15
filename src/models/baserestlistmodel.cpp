@@ -1,8 +1,8 @@
 #include "baserestlistmodel.h"
 #include <QtQml>
 
-BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_sort("-id"),
-    m_roleNamesIndex(0), m_loadingStatus(LoadingStatus::Idle), m_detailRoleNamesGenerated(false), m_apiInstance(nullptr)
+BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_roleNamesIndex(0),
+    m_detailRoleNamesGenerated(false), m_sort("-id"), m_loadingStatus(LoadingStatus::Idle), m_apiInstance(nullptr)
 {
 
 }
@@ -155,6 +155,12 @@ void BaseRestListModel::fetchDetail(QString id)
 {
     m_fetchDetailLastId = id;
     RestItem item = findItemById(id);
+
+    if (!item.isValid()) {
+        qWarning() << QString("No item with id %1").arg(id);
+        return;
+    }
+
     if (item.isUpdated()) {
         return;
     }
@@ -251,11 +257,20 @@ RestItem BaseRestListModel::findItemById(QString id)
             return item;
         }
     }
+
+    return RestItem();
 }
 
 void BaseRestListModel::updateItem(QVariantMap value)
 {
-    RestItem item = findItemById(fetchDetailLastId());
+    QString id = fetchDetailLastId();
+    RestItem item = findItemById(id);
+
+    if (!item.isValid()) {
+        qWarning() << QString("No item with id %1").arg(id);
+        return;
+    }
+
     int row = m_items.indexOf(item);
     item.update(value);
     m_items.replace(row, item);

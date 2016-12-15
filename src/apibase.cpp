@@ -2,7 +2,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-APIBase::APIBase(QObject *parent) : QObject(parent), m_authTokenHeader("Authorization"), m_acceptHeader("Accept")
+APIBase::APIBase(QObject *parent) : QObject(parent), m_acceptHeader("Accept"), m_authTokenHeader("Authorization")
 {
     manager = new QNetworkAccessManager(this);
 
