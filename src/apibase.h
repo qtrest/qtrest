@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include "pagination.h"
 
 class QNetworkAccessManager;
@@ -74,6 +75,8 @@ protected:
     QNetworkReply *patch(QUrl url);
 
     QNetworkAccessManager *manager;
+
+    virtual QNetworkRequest createRequest(const QUrl &url) const;
 
     void setRawHeaders(QNetworkRequest *request);
     void connectReplyToErrors(QNetworkReply *reply);
