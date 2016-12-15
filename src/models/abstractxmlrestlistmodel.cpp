@@ -110,7 +110,6 @@ QVariantMap AbstractXmlRestListModel::getVariantMap(QByteArray bytes)
     QVariantMap map;
 
     bool isInRoot = false;
-    int itemStartCount = 0;
     QString currentElementName;
     while (!xml.atEnd() && !xml.hasError())
     {
