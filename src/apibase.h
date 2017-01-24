@@ -1,9 +1,8 @@
 #ifndef APIMANAGER_H
 #define APIMANAGER_H
 
-#include <QObject>
-#include <QNetworkReply>
-#include <QNetworkRequest>
+#include <QtCore/QtCore>
+#include <QtNetwork/QtNetwork>
 #include "pagination.h"
 
 class QNetworkAccessManager;
@@ -33,6 +32,7 @@ public:
     QByteArray acceptHeader() const;
     QByteArray authToken() const;
     QByteArray authTokenHeader() const;
+    void eraseExtraHeader(QByteArray header);
 
     virtual QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
                                          QVariantMap filters = QVariantMap(),
@@ -52,6 +52,7 @@ public slots:
     void setAcceptHeader(QByteArray acceptHeader);
     void setAuthToken(QByteArray authToken);
     void setAuthTokenHeader(QByteArray authTokenHeader);
+    void setExtraHeader(QByteArray header, QByteArray token);
 
 signals:
     void replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString);
@@ -92,6 +93,8 @@ private:
     QByteArray m_acceptHeader;
     QByteArray m_authToken;
     QByteArray m_authTokenHeader;
+    QByteArray m_contentType;
+    QMap<QByteArray, QByteArray> m_extraHeaders;
 };
 
 #endif // APIMANAGER_H
