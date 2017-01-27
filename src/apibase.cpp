@@ -45,11 +45,6 @@ void APIBase::setRawHeaders(QNetworkRequest *request)
     	i.next();
     	request->setRawHeader(i.key(), i.value());
     }
-
-    QList<QByteArray> headers = request->rawHeaderList();
-    for (int i = 0; i < headers.size(); i++) {
-    	qWarning() << __PRETTY_FUNCTION__ << ":" << headers.at(i) << ":" << request->rawHeader(headers.at(i));
-    }
 }
 
 void APIBase::connectReplyToErrors(QNetworkReply *reply)
