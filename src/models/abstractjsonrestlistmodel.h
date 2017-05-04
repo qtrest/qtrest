@@ -14,10 +14,8 @@ public:
 protected:
     //for get list
     virtual QVariantList getVariantList(QByteArray bytes);
-
-private:
     //for get details for one element
-    QVariantMap getVariantMap(QByteArray bytes);
+    virtual QVariantMap getVariantMap(QByteArray bytes);
 };
 
 #endif // ABSJSONRESTLISTMODEL_H
