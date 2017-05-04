@@ -50,10 +50,10 @@ signals:
 protected:
     //for get list
     virtual QVariantList getVariantList(QByteArray bytes);
+    //for get details for one element
+    virtual QVariantMap getVariantMap(QByteArray bytes);
 
 private:
-    //for get details for one element
-    QVariantMap getVariantMap(QByteArray bytes);
     QString m_rootElement;
     QString m_itemElement;
 };
