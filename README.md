@@ -19,6 +19,7 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - Authentication;
 - StackView navigation;
 - Specify fields for GET list method;
+- Specify expand parameter for GET list method to expand relational data;
 - Lazy loading details item data;
 - Separate model and API methods;
 - Simple API implementation for your apps;
@@ -72,11 +73,11 @@ public:
 
     //handle all requests from ReadOnly model
     QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
-                           QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QString id = 0);
+                           QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QStringList expand = QStringList(), QString id = 0);
 
     //Method API /v1/coupon
     QNetworkReply *getCoupons(QStringList sort, Pagination *pagination,
-                              QVariantMap filters = QVariantMap(), QStringList fields = QStringList());
+                              QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QStringList expand = QStringList());
     
     //Method API /v1/coupon/{id}
     QNetworkReply *getCouponDetail(QString id);
@@ -100,10 +101,10 @@ SkidKZApi::SkidKZApi() : APIBase(0)
 }
 
 QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Pagination *pagination,
-                                  QVariantMap filters, QStringList fields, QString id)
+                                  QVariantMap filters, QStringList fields, QStringList expand, QString id)
 {
     if (path == "/v1/coupon") {
-        return getCoupons(sort, pagination, filters, fields);
+        return getCoupons(sort, pagination, filters, fields, expand);
     }
     else if (path == "/v1/coupon/{id}") {
         return getCouponDetail(id);
@@ -113,7 +114,7 @@ QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Paginati
     }
 }
 
-QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields)
+QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields, QStringList expand)
 {
     QUrl url = QUrl(baseUrl()+"/v1/coupon");
     QUrlQuery query;
@@ -149,6 +150,11 @@ QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, Q
     //Only needed fields
     if (!fields.isEmpty()) {
         query.addQueryItem("fields", fields.join(","));
+    }
+
+    //Additional fields to expand relational data
+    if (!expand.isEmpty()) {
+        query.addQueryItem("expand", expand.join(","));
     }
 
     //Make query
@@ -233,6 +239,7 @@ JsonRestListModel {
 
     filters: {'isArchive': '0'}
     fields: ['id','title']
+    expand: ['city']
     sort: ['-id']
 
     pagination {
@@ -299,7 +306,7 @@ QNetworkReply *CouponModel::fetchMoreImpl(const QModelIndex &parent)
 {
     Q_UNUSED(parent)
 
-    return static_cast<SkidKZApi *>(apiInstance())->getCoupons(sort(), pagination(), filters(), fields());
+    return static_cast<SkidKZApi *>(apiInstance())->getCoupons(sort(), pagination(), filters(), fields(), expand());
 }
 
 QNetworkReply *CouponModel::fetchDetailImpl(QString id)
@@ -369,11 +376,13 @@ CouponModel {
         idField: 'id'
         
         //Note: only if our APi support fields
-        //In ListView we need only base fileds, and exclude longDescription fields and other.
+        //In ListView we need only base fields, and exclude longDescription fields and other.
         fields: ['id','title','sourceServiceId','imagesLinks',
                 'mainImageLink','pageLink','cityId','boughtCount','shortDescription',
                 'createTimestamp', 'serviceName', 'discountType', 'originalCouponPrice', 
                 'originalPrice', 'discountPercent', 'discountPrice']
+        //Note: only if our APi support expand
+        expand: ['city']
         
         //Note: only if our APi support sorting
         //Additional param for sorting our results
