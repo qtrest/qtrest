@@ -318,6 +318,11 @@ QStringList BaseRestListModel::fields() const
     return m_fields;
 }
 
+QStringList BaseRestListModel::expand() const
+{
+    return m_expand;
+}
+
 QString BaseRestListModel::idField() const
 {
     return m_idField;
@@ -475,6 +480,15 @@ void BaseRestListModel::setFields(QStringList fields)
 
     m_fields = fields;
     emit fieldsChanged(fields);
+}
+
+void BaseRestListModel::setExpand(QStringList expand)
+{
+    if (m_expand == expand)
+        return;
+
+    m_expand = expand;
+    emit expandChanged(expand);
 }
 
 void BaseRestListModel::setIdField(QString idField)

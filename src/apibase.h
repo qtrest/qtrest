@@ -36,12 +36,14 @@ public:
 
     virtual QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
                                          QVariantMap filters = QVariantMap(),
-                                         QStringList fields = QStringList(), QString id = 0) {
+                                         QStringList fields = QStringList(), QStringList expand = QStringList(),
+                                         QString id = 0) {
         Q_UNUSED(path)
         Q_UNUSED(sort)
         Q_UNUSED(pagination)
         Q_UNUSED(filters)
         Q_UNUSED(fields)
+        Q_UNUSED(expand)
         Q_UNUSED(id)
         return 0;
     };
