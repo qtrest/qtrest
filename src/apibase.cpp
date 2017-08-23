@@ -137,6 +137,16 @@ QNetworkReply *APIBase::get(QUrl url)
     return reply;
 }
 
+QNetworkReply *APIBase::post(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "POST");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
 QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
@@ -163,6 +173,16 @@ QNetworkReply *APIBase::post(QUrl url, QHttpMultiPart *multiPart)
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->post(request, multiPart);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::put(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PUT");
     connectReplyToErrors(reply);
     return reply;
 }
@@ -197,6 +217,46 @@ QNetworkReply *APIBase::put(QUrl url, QHttpMultiPart *multiPart)
     return reply;
 }
 
+QNetworkReply *APIBase::patch(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, QIODevice *data)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, const QByteArray &data)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, QHttpMultiPart *multiPart)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", multiPart);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
 QNetworkReply *APIBase::deleteResource(QUrl url)
 {
     QNetworkRequest request = createRequest(url);
@@ -222,17 +282,7 @@ QNetworkReply *APIBase::options(QUrl url)
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
-    QNetworkReply *reply = manager->sendCustomRequest(request,"OPTIONS");
-    connectReplyToErrors(reply);
-    return reply;
-}
-
-QNetworkReply *APIBase::patch(QUrl url)
-{
-    QNetworkRequest request = createRequest(url);
-    setRawHeaders(&request);
-
-    QNetworkReply *reply = manager->sendCustomRequest(request,"PATCH");
+    QNetworkReply *reply = manager->sendCustomRequest(request, "OPTIONS");
     connectReplyToErrors(reply);
     return reply;
 }

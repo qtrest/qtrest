@@ -65,16 +65,21 @@ signals:
 
 protected:
     QNetworkReply *get(QUrl url);
+    QNetworkReply *post(QUrl url);
     QNetworkReply *post(QUrl url, QIODevice *data);
     QNetworkReply *post(QUrl url, const QByteArray &data);
     QNetworkReply *post(QUrl url, QHttpMultiPart *multiPart);
+    QNetworkReply *put(QUrl url);
     QNetworkReply *put(QUrl url, QIODevice *data);
     QNetworkReply *put(QUrl url, const QByteArray &data);
     QNetworkReply *put(QUrl url, QHttpMultiPart *multiPart);
+    QNetworkReply *patch(QUrl url);
+    QNetworkReply *patch(QUrl url, QIODevice *data);
+    QNetworkReply *patch(QUrl url, const QByteArray &data);
+    QNetworkReply *patch(QUrl url, QHttpMultiPart *multiPart);
     QNetworkReply *deleteResource(QUrl url);
     QNetworkReply *head(QUrl url);
     QNetworkReply *options(QUrl url);
-    QNetworkReply *patch(QUrl url);
 
     QNetworkAccessManager *manager;
 
