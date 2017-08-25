@@ -20,6 +20,8 @@ public:
     //Accept header for JSON/XML data
     Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
     Q_PROPERTY(QByteArray acceptHeader READ acceptHeader WRITE setAcceptHeader NOTIFY acceptHeaderChanged)
+    Q_PROPERTY(QByteArray contentType READ contentType WRITE setContentType NOTIFY contentTypeChanged)
+    Q_PROPERTY(QByteArray contentTypeHeader READ contentTypeHeader WRITE setContentTypeHeader NOTIFY contentTypeHeaderChanged)
     //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
     Q_PROPERTY(QByteArray baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged)
     //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
@@ -31,6 +33,8 @@ public:
     QByteArray baseUrl() const;
     QByteArray accept() const;
     QByteArray acceptHeader() const;
+    QByteArray contentType() const;
+    QByteArray contentTypeHeader() const;
     QByteArray authToken() const;
     QByteArray authTokenHeader() const;
 
@@ -52,6 +56,8 @@ public slots:
     void setBaseUrl(QByteArray baseUrl);
     void setAccept(QString accept);
     void setAcceptHeader(QByteArray acceptHeader);
+    void setContentType(QString contentType);
+    void setContentTypeHeader(QByteArray contentTypeHeader);
     void setAuthToken(QByteArray authToken);
     void setAuthTokenHeader(QByteArray authTokenHeader);
 
@@ -60,6 +66,8 @@ signals:
     void acceptChanged(QByteArray accept);
     void baseUrlChanged(QByteArray baseUrl);
     void acceptHeaderChanged(QByteArray acceptHeader);
+    void contentTypeChanged(QByteArray contentType);
+    void contentTypeHeaderChanged(QByteArray contentTypeHeader);
     void authTokenChanged(QByteArray authToken);
     void authTokenHeaderChanged(QByteArray authTokenHeader);
 
@@ -97,6 +105,8 @@ private:
     QByteArray m_accept;
     QByteArray m_baseUrl;
     QByteArray m_acceptHeader;
+    QByteArray m_contentType;
+    QByteArray m_contentTypeHeader;
     QByteArray m_authToken;
     QByteArray m_authTokenHeader;
 };
