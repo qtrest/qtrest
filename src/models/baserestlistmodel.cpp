@@ -113,13 +113,13 @@ void BaseRestListModel::fetchMoreFinished()
 
     //prepare vars
     int insertFrom = rowCount();
-    int insertCount = rowCount()+values.count()-1;
+    int insertCount = rowCount()+values.count();
 
     //check if we need to full reload
     if (this->loadingStatus() == LoadingStatus::FullReloadProcessing) {
         reset();
         insertFrom = rowCount();
-        insertCount = values.count()-1;
+        insertCount = values.count();
     }
 
     //check for assertion or empty data
@@ -133,7 +133,7 @@ void BaseRestListModel::fetchMoreFinished()
     }
 
     //append rows to model
-    beginInsertRows(this->index(rowCount(), 0), insertFrom, insertCount);
+    beginInsertRows(this->index(rowCount(), 0), insertFrom, insertCount-1);
 
     QListIterator<QVariant> i(values);
     while (i.hasNext()) {
