@@ -182,6 +182,9 @@ QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->post(request, data);
     connectReplyToErrors(reply);
@@ -225,6 +228,9 @@ QNetworkReply *APIBase::put(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->put(request, data);
     connectReplyToErrors(reply);
@@ -268,6 +274,9 @@ QNetworkReply *APIBase::patch(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", data);
     connectReplyToErrors(reply);
