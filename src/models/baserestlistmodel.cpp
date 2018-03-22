@@ -62,6 +62,7 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         setLoadingStatus(LoadingStatus::FullReloadProcessing);
         break;
     case LoadingStatus::Idle:
+    case LoadingStatus::IdleDetails:
         setLoadingStatus(LoadingStatus::LoadMoreProcessing);
         break;
     default:
@@ -167,6 +168,7 @@ void BaseRestListModel::fetchDetail(QString id)
 
     switch (loadingStatus()) {
     case LoadingStatus::Idle:
+    case LoadingStatus::IdleDetails:
         setLoadingStatus(LoadingStatus::LoadDetailsProcessing);
         break;
     default:
