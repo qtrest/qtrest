@@ -178,6 +178,11 @@ void BaseRestListModel::fetchDetail(QString id)
 
     m_detailsModel.invalidateModel();
 
+    // clean up the details model (QQmlPropertyMap)
+    for (const QString &key : m_details.keys()) {
+        m_details.clear(key);
+    }
+
     QNetworkReply *reply = fetchDetailImpl(id);
     connect(reply, SIGNAL(finished()), this, SLOT(fetchDetailFinished()));
 }
@@ -200,6 +205,13 @@ void BaseRestListModel::fetchDetailFinished()
     generateDetailsRoleNames(item);
 
     detailsModel()->setSourceModel(this);
+
+    // fill up the details model (QQmlPropertyMap)
+    QMapIterator<QString, QVariant> i(item);
+    while (i.hasNext()) {
+        i.next();
+        m_details.insert(i.key(), i.value());
+    }
 
     setLoadingStatus(LoadingStatus::IdleDetails);
 }
@@ -345,6 +357,11 @@ QString BaseRestListModel::fetchDetailLastId() const
 DetailsModel *BaseRestListModel::detailsModel()
 {
     return &m_detailsModel;
+}
+
+QQmlPropertyMap *BaseRestListModel::details()
+{
+    return &m_details;
 }
 
 Pagination *BaseRestListModel::pagination()
