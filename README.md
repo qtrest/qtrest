@@ -1,5 +1,7 @@
 # Qt / QML REST Client  (Beta)
 
+**NOTE: the last changes break the compatibility with the previous versions of the library. See the `expand` parameter.**
+
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
 
@@ -19,6 +21,7 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - Authentication;
 - StackView navigation;
 - Specify fields for GET list method;
+- Specify expand parameter for GET list method to expand relational data;
 - Lazy loading details item data;
 - Separate model and API methods;
 - Simple API implementation for your apps;
@@ -48,7 +51,22 @@ mkdir PROJECT_ROOT/api/
 cd PROJECT_ROOT/api/
 git clone https://github.com/kafeg/qtrest.git
 ```
-Then add `include (api/qtrest/com_github_qtrest.pri)` to your project file.
+If you're using qmake, just add `include (api/qtrest/com_github_qtrest.pri)` to the .pro file.
+
+For Qbs, please make the following adjustments inside the .qbs file:
+```
+import qbs
+
+Project {
+    ...
+    references: "qtrest/com_github_kafeg_qtrest.qbs"
+    Product {
+        ...
+        Depends { name: "qtrest" }
+        ...
+    }
+}
+```
 
 #### 2. Create your own API class
 After setup library we must create class API inherited from existing APIBase, e.g. `api/api.h` and `api/api.cpp`:
@@ -72,11 +90,11 @@ public:
 
     //handle all requests from ReadOnly model
     QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
-                           QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QString id = 0);
+                           QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QStringList expand = QStringList(), QString id = 0);
 
     //Method API /v1/coupon
     QNetworkReply *getCoupons(QStringList sort, Pagination *pagination,
-                              QVariantMap filters = QVariantMap(), QStringList fields = QStringList());
+                              QVariantMap filters = QVariantMap(), QStringList fields = QStringList(), QStringList expand = QStringList());
     
     //Method API /v1/coupon/{id}
     QNetworkReply *getCouponDetail(QString id);
@@ -100,10 +118,10 @@ SkidKZApi::SkidKZApi() : APIBase(0)
 }
 
 QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Pagination *pagination,
-                                  QVariantMap filters, QStringList fields, QString id)
+                                  QVariantMap filters, QStringList fields, QStringList expand, QString id)
 {
     if (path == "/v1/coupon") {
-        return getCoupons(sort, pagination, filters, fields);
+        return getCoupons(sort, pagination, filters, fields, expand);
     }
     else if (path == "/v1/coupon/{id}") {
         return getCouponDetail(id);
@@ -113,7 +131,7 @@ QNetworkReply *SkidKZApi::handleRequest(QString path, QStringList sort, Paginati
     }
 }
 
-QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields)
+QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields, QStringList expand)
 {
     QUrl url = QUrl(baseUrl()+"/v1/coupon");
     QUrlQuery query;
@@ -149,6 +167,11 @@ QNetworkReply *SkidKZApi::getCoupons(QStringList sort, Pagination *pagination, Q
     //Only needed fields
     if (!fields.isEmpty()) {
         query.addQueryItem("fields", fields.join(","));
+    }
+
+    //Additional fields to expand relational data
+    if (!expand.isEmpty()) {
+        query.addQueryItem("expand", expand.join(","));
     }
 
     //Make query
@@ -233,6 +256,7 @@ JsonRestListModel {
 
     filters: {'isArchive': '0'}
     fields: ['id','title']
+    expand: ['city']
     sort: ['-id']
 
     pagination {
@@ -299,7 +323,7 @@ QNetworkReply *CouponModel::fetchMoreImpl(const QModelIndex &parent)
 {
     Q_UNUSED(parent)
 
-    return static_cast<SkidKZApi *>(apiInstance())->getCoupons(sort(), pagination(), filters(), fields());
+    return static_cast<SkidKZApi *>(apiInstance())->getCoupons(sort(), pagination(), filters(), fields(), expand());
 }
 
 QNetworkReply *CouponModel::fetchDetailImpl(QString id)
@@ -369,11 +393,13 @@ CouponModel {
         idField: 'id'
         
         //Note: only if our APi support fields
-        //In ListView we need only base fileds, and exclude longDescription fields and other.
+        //In ListView we need only base fields, and exclude longDescription fields and other.
         fields: ['id','title','sourceServiceId','imagesLinks',
                 'mainImageLink','pageLink','cityId','boughtCount','shortDescription',
                 'createTimestamp', 'serviceName', 'discountType', 'originalCouponPrice', 
                 'originalPrice', 'discountPercent', 'discountPrice']
+        //Note: only if our APi support expand
+        expand: ['city']
         
         //Note: only if our APi support sorting
         //Additional param for sorting our results
@@ -424,7 +450,7 @@ ListView {
 ## Advanced usage
 
 #### 1. DetailsView page
-Also, we have full support for StackView navigation by special 'details model' available in each your model, based on QSortFilterModel and using 'ID' field as filter. For example, we have ListView in one Stack element, and DrtailView in other stack element.
+Also, we have full support for StackView navigation by special 'details model' available in each your model, based on QSortFilterModel and using 'ID' field as filter. For example, we have ListView in one Stack element, and DetailView in other stack element.
 We may fetch details info for one of elements and send this element into Details page, when we may use simple hack for display one element with detail info:
 ``` QML
 import QtQuick 2.6
@@ -489,4 +515,45 @@ Item {
     }
 }
 ```
-In this code we open Detail page, waitng for loading details info with BusyIndicator displaying, and after loading complete - display full information for item. Our hack is in ListView, it will be not interactive and display only one item.
+In this code we open Detail page, waiting for loading details info with BusyIndicator displaying, and after loading complete - display full information for item. Our hack is in ListView, it will be not interactive and display only one item.
+
+It's also possible to create a details page without `ListView`. In this case, the above examples come with the following changes:
+1. You have to pass the `couponsModel.details` property instead of `couponsModel.detailsModel`:
+``` QML
+...
+stackView.push(couponsList.detailSource,
+{details: couponsModel.details,
+couponsModel: couponsModel})
+...
+```
+And the changes for the details page:
+``` QML
+...
+property var details
+...
+```
+2. Then, you have to implement the `detailComponent` component in a shorter form:
+``` QML
+...
+Component {
+    id: detailComponent
+
+    ItemDelegate {
+        width: couponsList.width;
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+}
+...
+```
+Thus, you can directly access any property of the details model (without `ListView`). E.g. - `details.title` in the following example:
+``` QML
+...
+Component {
+    id: detailComponent
+
+    Label {
+        text: details.title
+    }
+}
+...
+```

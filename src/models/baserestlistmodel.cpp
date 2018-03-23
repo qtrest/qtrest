@@ -62,6 +62,7 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         setLoadingStatus(LoadingStatus::FullReloadProcessing);
         break;
     case LoadingStatus::Idle:
+    case LoadingStatus::IdleDetails:
         setLoadingStatus(LoadingStatus::LoadMoreProcessing);
         break;
     default:
@@ -113,13 +114,13 @@ void BaseRestListModel::fetchMoreFinished()
 
     //prepare vars
     int insertFrom = rowCount();
-    int insertCount = rowCount()+values.count()-1;
+    int insertCount = rowCount()+values.count();
 
     //check if we need to full reload
     if (this->loadingStatus() == LoadingStatus::FullReloadProcessing) {
         reset();
         insertFrom = rowCount();
-        insertCount = values.count()-1;
+        insertCount = values.count();
     }
 
     //check for assertion or empty data
@@ -133,7 +134,7 @@ void BaseRestListModel::fetchMoreFinished()
     }
 
     //append rows to model
-    beginInsertRows(this->index(rowCount(), 0), insertFrom, insertCount);
+    beginInsertRows(this->index(rowCount(), 0), insertFrom, insertCount-1);
 
     QListIterator<QVariant> i(values);
     while (i.hasNext()) {
@@ -167,6 +168,7 @@ void BaseRestListModel::fetchDetail(QString id)
 
     switch (loadingStatus()) {
     case LoadingStatus::Idle:
+    case LoadingStatus::IdleDetails:
         setLoadingStatus(LoadingStatus::LoadDetailsProcessing);
         break;
     default:
@@ -175,6 +177,11 @@ void BaseRestListModel::fetchDetail(QString id)
     }
 
     m_detailsModel.invalidateModel();
+
+    // clean up the details model (QQmlPropertyMap)
+    for (const QString &key : m_details.keys()) {
+        m_details.clear(key);
+    }
 
     QNetworkReply *reply = fetchDetailImpl(id);
     connect(reply, SIGNAL(finished()), this, SLOT(fetchDetailFinished()));
@@ -198,6 +205,13 @@ void BaseRestListModel::fetchDetailFinished()
     generateDetailsRoleNames(item);
 
     detailsModel()->setSourceModel(this);
+
+    // fill up the details model (QQmlPropertyMap)
+    QMapIterator<QString, QVariant> i(item);
+    while (i.hasNext()) {
+        i.next();
+        m_details.insert(i.key(), i.value());
+    }
 
     setLoadingStatus(LoadingStatus::IdleDetails);
 }
@@ -318,6 +332,11 @@ QStringList BaseRestListModel::fields() const
     return m_fields;
 }
 
+QStringList BaseRestListModel::expand() const
+{
+    return m_expand;
+}
+
 QString BaseRestListModel::idField() const
 {
     return m_idField;
@@ -338,6 +357,11 @@ QString BaseRestListModel::fetchDetailLastId() const
 DetailsModel *BaseRestListModel::detailsModel()
 {
     return &m_detailsModel;
+}
+
+QQmlPropertyMap *BaseRestListModel::details()
+{
+    return &m_details;
 }
 
 Pagination *BaseRestListModel::pagination()
@@ -475,6 +499,15 @@ void BaseRestListModel::setFields(QStringList fields)
 
     m_fields = fields;
     emit fieldsChanged(fields);
+}
+
+void BaseRestListModel::setExpand(QStringList expand)
+{
+    if (m_expand == expand)
+        return;
+
+    m_expand = expand;
+    emit expandChanged(expand);
 }
 
 void BaseRestListModel::setIdField(QString idField)

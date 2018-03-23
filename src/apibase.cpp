@@ -2,7 +2,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-APIBase::APIBase(QObject *parent) : QObject(parent), m_acceptHeader("Accept"), m_authTokenHeader("Authorization")
+APIBase::APIBase(QObject *parent) : QObject(parent), m_acceptHeader("Accept"), m_contentTypeHeader("Content-Type"), m_authTokenHeader("Authorization")
 {
     manager = new QNetworkAccessManager(this);
 
@@ -69,6 +69,16 @@ QByteArray APIBase::acceptHeader() const
     return m_acceptHeader;
 }
 
+QByteArray APIBase::contentType() const
+{
+    return m_contentType;
+}
+
+QByteArray APIBase::contentTypeHeader() const
+{
+    return m_contentTypeHeader;
+}
+
 QByteArray APIBase::authToken() const
 {
     return m_authToken;
@@ -109,6 +119,27 @@ void APIBase::setAcceptHeader(QByteArray acceptHeader)
     emit acceptHeaderChanged(acceptHeader);
 }
 
+void APIBase::setContentType(QString contentType)
+{
+    QByteArray newData;
+    newData.append(contentType);
+
+    if (m_contentType == newData)
+        return;
+
+    m_contentType = newData;
+    emit contentTypeChanged(newData);
+}
+
+void APIBase::setContentTypeHeader(QByteArray contentTypeHeader)
+{
+    if (m_contentTypeHeader == contentTypeHeader)
+        return;
+
+    m_contentTypeHeader = contentTypeHeader;
+    emit contentTypeHeaderChanged(contentTypeHeader);
+}
+
 void APIBase::setAuthToken(QByteArray authToken)
 {
     if (m_authToken == authToken)
@@ -137,10 +168,23 @@ QNetworkReply *APIBase::get(QUrl url)
     return reply;
 }
 
+QNetworkReply *APIBase::post(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "POST");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
 QNetworkReply *APIBase::post(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->post(request, data);
     connectReplyToErrors(reply);
@@ -151,6 +195,9 @@ QNetworkReply *APIBase::post(QUrl url,const QByteArray &data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->post(request, data);
     connectReplyToErrors(reply);
@@ -167,10 +214,23 @@ QNetworkReply *APIBase::post(QUrl url, QHttpMultiPart *multiPart)
     return reply;
 }
 
+QNetworkReply *APIBase::put(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PUT");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
 QNetworkReply *APIBase::put(QUrl url, QIODevice *data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->put(request, data);
     connectReplyToErrors(reply);
@@ -181,6 +241,9 @@ QNetworkReply *APIBase::put(QUrl url, const QByteArray &data)
 {
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
 
     QNetworkReply *reply = manager->put(request, data);
     connectReplyToErrors(reply);
@@ -193,6 +256,52 @@ QNetworkReply *APIBase::put(QUrl url, QHttpMultiPart *multiPart)
     setRawHeaders(&request);
 
     QNetworkReply *reply = manager->put(request, multiPart);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH");
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, QIODevice *data)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, const QByteArray &data)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+    if (!contentType().isEmpty()) {
+        request.setRawHeader(contentTypeHeader(), contentType());
+    }
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", data);
+    connectReplyToErrors(reply);
+    return reply;
+}
+
+QNetworkReply *APIBase::patch(QUrl url, QHttpMultiPart *multiPart)
+{
+    QNetworkRequest request = createRequest(url);
+    setRawHeaders(&request);
+
+    QNetworkReply *reply = manager->sendCustomRequest(request, "PATCH", multiPart);
     connectReplyToErrors(reply);
     return reply;
 }
@@ -222,17 +331,7 @@ QNetworkReply *APIBase::options(QUrl url)
     QNetworkRequest request = createRequest(url);
     setRawHeaders(&request);
 
-    QNetworkReply *reply = manager->sendCustomRequest(request,"OPTIONS");
-    connectReplyToErrors(reply);
-    return reply;
-}
-
-QNetworkReply *APIBase::patch(QUrl url)
-{
-    QNetworkRequest request = createRequest(url);
-    setRawHeaders(&request);
-
-    QNetworkReply *reply = manager->sendCustomRequest(request,"PATCH");
+    QNetworkReply *reply = manager->sendCustomRequest(request, "OPTIONS");
     connectReplyToErrors(reply);
     return reply;
 }

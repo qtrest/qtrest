@@ -2,6 +2,7 @@
 #define BASERESTLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QQmlPropertyMap>
 #include "restitem.h"
 #include "pagination.h"
 #include "detailsmodel.h"
@@ -30,6 +31,8 @@ public:
     Q_PROPERTY(QVariantMap filters READ filters WRITE setFilters NOTIFY filtersChanged)
     //Specify fields parameter
     Q_PROPERTY(QStringList fields READ fields WRITE setFields NOTIFY fieldsChanged)
+    //Specify expand parameter
+    Q_PROPERTY(QStringList expand READ expand WRITE setExpand NOTIFY expandChanged)
     //Specify Accept header for application/json or application/xml
     Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
 
@@ -38,6 +41,7 @@ public:
     Q_PROPERTY(int idFieldRole READ idFieldRole)
     Q_PROPERTY(QString fetchDetailLastId READ fetchDetailLastId)
     Q_PROPERTY(DetailsModel *detailsModel READ detailsModel)
+    Q_PROPERTY(QQmlPropertyMap *details READ details)
 
     //load status and result code
     Q_PROPERTY(LoadingStatus loadingStatus READ loadingStatus WRITE setLoadingStatus NOTIFY loadingStatusChanged)
@@ -67,10 +71,12 @@ public:
     QString loadingErrorString() const;
     QNetworkReply::NetworkError loadingErrorCode() const;
     QStringList fields() const;
+    QStringList expand() const;
     QString idField() const;
     int idFieldRole() const;
     QString fetchDetailLastId() const;
     DetailsModel *detailsModel();
+    QQmlPropertyMap *details();
     Pagination *pagination();
     QByteArray accept();
     int count() const;
@@ -87,6 +93,7 @@ signals:
     void loadingErrorStringChanged(QString loadingErrorString);
     void loadingErrorCodeChanged(QNetworkReply::NetworkError loadingErrorCode);
     void fieldsChanged(QStringList fields);
+    void expandChanged(QStringList expand);
     void idFieldChanged(QString idField);
     void acceptChanged(QByteArray accept);
     void apiInstanceChanged(APIBase *apiInstance);
@@ -108,6 +115,7 @@ public slots:
     void setSort(QStringList sort);
     void setFilters(QVariantMap filters);
     void setFields(QStringList fields);
+    void setExpand(QStringList expand);
     void setIdField(QString idField);
 
     void setApiInstance(APIBase *apiInstance);
@@ -161,6 +169,7 @@ private:
     bool m_detailRoleNamesGenerated;
     QList<RestItem> m_items;
     QStringList m_fields;
+    QStringList m_expand;
     QString m_idField;
     QStringList m_sort;
     LoadingStatus m_loadingStatus;
@@ -169,6 +178,7 @@ private:
     QNetworkReply::NetworkError m_loadingErrorCode;
     QString m_fetchDetailLastId;
     DetailsModel m_detailsModel;
+    QQmlPropertyMap m_details;
     Pagination m_pagination;
     APIBase *m_apiInstance;
 };
