@@ -98,8 +98,8 @@ protected:
 
 protected slots:
     void replyFinished(QNetworkReply *reply);
-    void replyError(QNetworkReply::NetworkError error);
-    void slotSslErrors(QList<QSslError> errors);
+    void handleReplyError(QNetworkReply::NetworkError error);
+    void handleSslErrors(QList<QSslError> errors);
 
 private:
     QByteArray m_accept;

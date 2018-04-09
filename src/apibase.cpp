@@ -18,12 +18,12 @@ void APIBase::replyFinished(QNetworkReply *reply)
     }
 }
 
-void APIBase::replyError(QNetworkReply::NetworkError error)
+void APIBase::handleReplyError(QNetworkReply::NetworkError error)
 {
     qDebug() << "Error" << error;
 }
 
-void APIBase::slotSslErrors(QList<QSslError> errors)
+void APIBase::handleSslErrors(QList<QSslError> errors)
 {
     qDebug() << errors;
 }
@@ -37,10 +37,10 @@ void APIBase::setRawHeaders(QNetworkRequest *request)
 void APIBase::connectReplyToErrors(QNetworkReply *reply)
 {
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(replyError(QNetworkReply::NetworkError)));
+            this, SLOT(handleReplyError(QNetworkReply::NetworkError)));
 
     connect(reply, SIGNAL(sslErrors(QList<QSslError>)),
-            this, SLOT(slotSslErrors(QList<QSslError>)));
+            this, SLOT(handleSslErrors(QList<QSslError>)));
 }
 
 bool APIBase::checkReplyIsError(QNetworkReply *reply)
