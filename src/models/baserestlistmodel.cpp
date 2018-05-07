@@ -2,7 +2,7 @@
 #include <QtQml>
 
 BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_roleNamesIndex(0),
-    m_detailRoleNamesGenerated(false), m_sort("-id"), m_loadingStatus(LoadingStatus::Idle), m_apiInstance(nullptr)
+    m_detailRoleNamesGenerated(false), m_sort("-id"), m_loadingStatus(LoadingStatus::Idle), m_apiInstance(nullptr), m_enableDetailsCaching(true)
 {
 
 }
@@ -162,7 +162,7 @@ void BaseRestListModel::fetchDetail(QString id)
         return;
     }
 
-    if (item.isUpdated()) {
+    if (enableDetailsCaching() && item.isUpdated()) {
         return;
     }
 
@@ -247,6 +247,21 @@ void BaseRestListModel::setLoadingErrorCode(QNetworkReply::NetworkError loadingE
 
     m_loadingErrorCode = loadingErrorCode;
     emit loadingErrorCodeChanged(loadingErrorCode);
+}
+
+bool BaseRestListModel::enableDetailsCaching() const
+{
+    return m_enableDetailsCaching;
+}
+
+void BaseRestListModel::setEnableDetailsCaching(bool enableDetailsCaching)
+{
+    if (m_enableDetailsCaching == enableDetailsCaching) {
+        return;
+    }
+
+    m_enableDetailsCaching = enableDetailsCaching;
+    emit enableDetailsCachingChanged(enableDetailsCaching);
 }
 
 void BaseRestListModel::replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString)

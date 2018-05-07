@@ -38,6 +38,7 @@ public:
 
     //identify column name, role, last fetched detail and detailModel
     Q_PROPERTY(QString idField READ idField WRITE setIdField NOTIFY idFieldChanged)
+    Q_PROPERTY(bool enableDetailsCaching READ enableDetailsCaching WRITE setEnableDetailsCaching NOTIFY enableDetailsCachingChanged)
     Q_PROPERTY(int idFieldRole READ idFieldRole)
     Q_PROPERTY(QString fetchDetailLastId READ fetchDetailLastId)
     Q_PROPERTY(DetailsModel *detailsModel READ detailsModel)
@@ -84,6 +85,9 @@ public:
     //Overloaded system methdos
     QVariant data(const QModelIndex &index, int role) const;
 
+    bool enableDetailsCaching() const;
+    void setEnableDetailsCaching(bool enableDetailsCaching);
+
 signals:
     //Properties signals
     void countChanged();
@@ -97,6 +101,7 @@ signals:
     void idFieldChanged(QString idField);
     void acceptChanged(QByteArray accept);
     void apiInstanceChanged(APIBase *apiInstance);
+    void enableDetailsCachingChanged(bool enableDetailsCaching);
 
 public slots:
     void reload();
@@ -181,6 +186,7 @@ private:
     QQmlPropertyMap m_details;
     Pagination m_pagination;
     APIBase *m_apiInstance;
+    bool m_enableDetailsCaching;
 };
 
 #endif // BASERESTLISTMODEL_H
