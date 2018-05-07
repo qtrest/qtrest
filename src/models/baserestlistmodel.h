@@ -42,7 +42,7 @@ public:
     Q_PROPERTY(int idFieldRole READ idFieldRole)
     Q_PROPERTY(QString fetchDetailLastId READ fetchDetailLastId)
     Q_PROPERTY(DetailsModel *detailsModel READ detailsModel)
-    Q_PROPERTY(QQmlPropertyMap *details READ details)
+    Q_PROPERTY(QQmlPropertyMap *details READ details CONSTANT)
 
     //load status and result code
     Q_PROPERTY(LoadingStatus loadingStatus READ loadingStatus WRITE setLoadingStatus NOTIFY loadingStatusChanged)
