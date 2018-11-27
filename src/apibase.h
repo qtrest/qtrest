@@ -93,7 +93,7 @@ protected:
 
     virtual QNetworkRequest createRequest(const QUrl &url) const;
 
-    void setRawHeaders(QNetworkRequest *request);
+    virtual void setRawHeaders(QNetworkRequest *request);
     void connectReplyToErrors(QNetworkReply *reply);
 
 protected slots:
