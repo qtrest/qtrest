@@ -8,7 +8,7 @@ class Pagination : public QObject
     Q_OBJECT
 
 public:
-    Q_INVOKABLE explicit Pagination(QObject *parent = 0);
+    Q_INVOKABLE explicit Pagination(QObject *parent = nullptr);
 
     //Specify pagination policy count
     Q_PROPERTY(PaginationPolicy policy READ policy WRITE setPolicy NOTIFY policyChanged)

@@ -14,16 +14,14 @@ class APIBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit APIBase(QObject *parent = 0);
-    bool checkReplyIsError(QNetworkReply *reply);
+    explicit APIBase(QObject *parent = nullptr);
+    virtual ~APIBase();
 
-    //Accept header for JSON/XML data
+    Q_PROPERTY(QByteArray baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged)
     Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
     Q_PROPERTY(QByteArray acceptHeader READ acceptHeader WRITE setAcceptHeader NOTIFY acceptHeaderChanged)
     Q_PROPERTY(QByteArray contentType READ contentType WRITE setContentType NOTIFY contentTypeChanged)
     Q_PROPERTY(QByteArray contentTypeHeader READ contentTypeHeader WRITE setContentTypeHeader NOTIFY contentTypeHeaderChanged)
-    //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
-    Q_PROPERTY(QByteArray baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged)
     //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
     Q_PROPERTY(QByteArray authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged)
     //Specify Auth token header name. Default is 'Authorization' (You may use Basic auth and Bearer token auth)
@@ -49,8 +47,10 @@ public:
         Q_UNUSED(fields)
         Q_UNUSED(expand)
         Q_UNUSED(id)
-        return 0;
-    };
+        return nullptr;
+    }
+
+    bool checkReplyIsError(QNetworkReply *reply);
 
 public slots:
     void setBaseUrl(QByteArray baseUrl);
@@ -90,8 +90,6 @@ protected:
     QNetworkReply *options(QUrl url);
 
     QNetworkAccessManager *manager;
-
-    virtual QNetworkRequest createRequest(const QUrl &url) const;
 
     virtual void setRawHeaders(QNetworkRequest *request);
     void connectReplyToErrors(QNetworkReply *reply);

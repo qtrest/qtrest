@@ -9,7 +9,8 @@ class AbstractXmlRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
-    explicit AbstractXmlRestListModel(QObject *parent = 0);
+    explicit AbstractXmlRestListModel(QObject *parent = nullptr);
+    virtual ~AbstractXmlRestListModel() = default;
 
     Q_PROPERTY(QString rootElement READ rootElement WRITE setRootElement NOTIFY rootElementChanged)
     Q_PROPERTY(QString itemElement READ itemElement WRITE setItemElement NOTIFY itemElementChanged)
