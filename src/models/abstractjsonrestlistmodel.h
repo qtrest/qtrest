@@ -9,7 +9,8 @@ class AbstractJsonRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
-    explicit AbstractJsonRestListModel(QObject *parent = 0);
+    explicit AbstractJsonRestListModel(QObject *parent = nullptr);
+    virtual ~AbstractJsonRestListModel() = default;
 
 protected:
     //for get list

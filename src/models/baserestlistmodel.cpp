@@ -1,10 +1,22 @@
 #include "baserestlistmodel.h"
 #include <QtQml>
 
-BaseRestListModel::BaseRestListModel(QObject *parent) : QAbstractListModel(parent), m_roleNamesIndex(0),
-    m_detailRoleNamesGenerated(false), m_sort("-id"), m_loadingStatus(LoadingStatus::Idle), m_apiInstance(nullptr), m_enableDetailsCaching(true)
+BaseRestListModel::BaseRestListModel(QObject *parent) :
+    QAbstractListModel(parent),
+    m_roleNamesIndex(0),
+    m_detailRoleNamesGenerated(false),
+    m_sort("-id"),
+    m_loadingStatus(LoadingStatus::Idle),
+    m_apiInstance(nullptr),
+    m_enableDetailsCaching(true)
 {
 
+}
+
+BaseRestListModel::~BaseRestListModel()
+{
+    if (m_apiInstance)
+        delete m_apiInstance;
 }
 
 void BaseRestListModel::declareQML()
@@ -94,7 +106,8 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
     }
 
     QNetworkReply *reply = fetchMoreImpl(parent);
-    connect(reply, SIGNAL(finished()), this, SLOT(fetchMoreFinished()));
+    connect(reply, &QNetworkReply::finished,
+             this, &BaseRestListModel::fetchMoreFinished);
 }
 
 void BaseRestListModel::fetchMoreFinished()
@@ -184,7 +197,8 @@ void BaseRestListModel::fetchDetail(QString id)
     }
 
     QNetworkReply *reply = fetchDetailImpl(id);
-    connect(reply, SIGNAL(finished()), this, SLOT(fetchDetailFinished()));
+    connect(reply, &QNetworkReply::finished,
+             this, &BaseRestListModel::fetchDetailFinished);
 }
 
 void BaseRestListModel::fetchDetailFinished()
@@ -542,16 +556,16 @@ void BaseRestListModel::setApiInstance(APIBase *apiInstance)
     m_apiInstance = apiInstance;
 
     m_apiInstance->setAccept(accept());
-    connect(m_apiInstance,SIGNAL(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)),
-            this, SLOT(replyError(QNetworkReply *, QNetworkReply::NetworkError, QString)));
+    connect(m_apiInstance, &APIBase::replyError,
+                     this, &BaseRestListModel::replyError);
 
     emit apiInstanceChanged(apiInstance);
 }
 
 APIBase *BaseRestListModel::apiInstance()
 {
-    if (m_apiInstance == nullptr) {
-        return new APIBase();
-    }
+    if (m_apiInstance == nullptr)
+        setApiInstance(new APIBase());
+
     return m_apiInstance;
 }

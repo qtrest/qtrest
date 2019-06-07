@@ -10,7 +10,7 @@ class Requests : public QObject
     QString m_getDetails;
 
 public:
-    Q_INVOKABLE explicit Requests(QObject *parent = 0);
+    Q_INVOKABLE explicit Requests(QObject *parent = nullptr);
 
     Q_PROPERTY(QString get READ get WRITE setGet NOTIFY getChanged)
     Q_PROPERTY(QString getDetails READ getDetails WRITE setGetDetails NOTIFY getDetailsChanged)

@@ -16,7 +16,8 @@ class BaseRestListModel : public QAbstractListModel
     Q_OBJECT
     friend DetailsModel;
 public:
-    BaseRestListModel(QObject *parent = 0);
+    BaseRestListModel(QObject *parent = nullptr);
+    virtual ~BaseRestListModel();
 
     Q_PROPERTY(APIBase *api READ apiInstance WRITE setApiInstance NOTIFY apiInstanceChanged)
 

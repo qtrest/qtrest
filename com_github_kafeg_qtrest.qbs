@@ -10,7 +10,6 @@ StaticLibrary {
         "src/models/baserestlistmodel.h",
         "src/models/detailsmodel.h",
         "src/models/restitem.h",
-        "src/usingleton.h",
         "src/models/pagination.h",
         "src/models/abstractjsonrestlistmodel.h",
         "src/models/abstractxmlrestlistmodel.h",
@@ -30,7 +29,7 @@ StaticLibrary {
         "com_github_kafeg_qtrest.qrc",
         "README.md",
         "LICENSE",
-        "docs/QtMicroRestFramework.qmodel"
+        "docs/QtMicroRestFramework.qmodel",
     ]
     cpp.includePaths: ["src", "src/models"]
     Export {

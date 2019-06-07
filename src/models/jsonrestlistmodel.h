@@ -10,7 +10,7 @@ class JsonRestListModel : public AbstractJsonRestListModel
     Q_OBJECT
 
 public:
-    explicit JsonRestListModel(QObject *parent = 0);
+    explicit JsonRestListModel(QObject *parent = nullptr);
 
     Q_PROPERTY(Requests *requests READ requests)
 
