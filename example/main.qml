@@ -17,7 +17,7 @@ ApplicationWindow
     {
         id: jsonApi
 
-        baseUrl: "http://api.skid.kz"
+        baseUrl: "https://jsonplaceholder.typicode.com"
 
         //authTokenHeader: "Authorization"
         //authToken: "Bearer 8aef452ee3b32466209535b96d456b06"
@@ -29,6 +29,12 @@ ApplicationWindow
     {
         id: jsonModel
         api: jsonApi
+
+        //define available requests for this model
+        requests {
+            get: "/posts"
+            getDetails: "/posts/{id}"
+        }
 
         //we must cpecify ID field for correct interaction with API
         idField: 'id'
@@ -48,8 +54,12 @@ ApplicationWindow
     ListView {
         id: jsonList
         model: jsonModel
+        width: parent.width
+        height: parent.height
 
         delegate: Item {
+            width: parent.width
+            height: 20
             Text {
                 text: title
             }
@@ -59,10 +69,7 @@ ApplicationWindow
                 anchors.fill: parent
 
                 onClicked: {
-                    couponsModel.fetchDetail(id)
-                    stackView.push(couponsList.detailSource,
-                                   {detailsModel: couponsModel.detailsModel,
-                                       couponsModel: couponsModel})
+                    console.log("Post Text " + body)
                 }
             }
         }
