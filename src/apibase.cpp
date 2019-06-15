@@ -1,6 +1,4 @@
 #include "apibase.h"
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 
 APIBase::APIBase(QObject *parent) :
     QObject(parent),
@@ -38,10 +36,25 @@ void APIBase::handleSslErrors(QList<QSslError> errors)
     qDebug() << errors;
 }
 
+void APIBase::setExtraHeader(QByteArray header, QByteArray token)
+{
+	m_extraHeaders[header] = token;
+}
+
+void APIBase::eraseExtraHeader(QByteArray header)
+{
+	m_extraHeaders.remove(header);
+}
+
 void APIBase::setRawHeaders(QNetworkRequest *request)
 {
     request->setRawHeader(acceptHeader(), accept());
     request->setRawHeader(authTokenHeader(), authToken());
+    QMapIterator<QByteArray, QByteArray> i(m_extraHeaders);
+    while (i.hasNext()) {
+    	i.next();
+    	request->setRawHeader(i.key(), i.value());
+    }
 }
 
 void APIBase::connectReplyToErrors(QNetworkReply *reply)
