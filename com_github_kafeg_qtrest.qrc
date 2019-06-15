@@ -1,6 +1,0 @@
-
-<RCC>
-    <qresource prefix="/com/github/kafeg/qtrest">
-        <file>qmldir</file>
-    </qresource>
-</RCC>
