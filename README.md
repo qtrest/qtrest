@@ -1,6 +1,6 @@
 # Qt / QML REST Client  (Beta)
 
-**NOTE: the last changes break the compatibility with the previous versions of the library. See the `expand` parameter.**
+**NOTE: In version 0.2.0 changed build system from qmake to CMake and also we changed internal API, so backward compatibility was breaked.**
 
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
@@ -37,35 +37,20 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - No cache for data;
 - Support JSON subarray data, but not support XML subarray data;
 
-## Example application
-I will made fully functionality example application, available at here: https://github.com/kafeg/qtrest-example
+## Examples
+ - 'example' - basic example how to use internal and custom models
 
 ## Usage
-Usage library is simplest as it possible. I will show howto use it on my real example project.
+Usage library is simplest as it possible.
 
-#### 1. Include library to your project
-
-First, clone library.
+#### 1. Build library
 ```
-mkdir PROJECT_ROOT/api/
-cd PROJECT_ROOT/api/
-git clone https://github.com/kafeg/qtrest.git
-```
-If you're using qmake, just add `include (api/qtrest/com_github_qtrest.pri)` to the .pro file.
-
-For Qbs, please make the following adjustments inside the .qbs file:
-```
-import qbs
-
-Project {
-    ...
-    references: "qtrest/com_github_kafeg_qtrest.qbs"
-    Product {
-        ...
-        Depends { name: "qtrest" }
-        ...
-    }
-}
+git clone https://github.com/kafeg/qtrest.git qtrest
+cd qtrest
+mkdir build
+cd build
+cmake ..
+cmake --build .
 ```
 
 #### 2. Create your own API class
@@ -105,6 +90,7 @@ public:
 
 #endif // SKIDKZAPI_H
 ```
+
 And implement this class:
 ``` C++
 #include "skidkzapi.h"
@@ -231,7 +217,8 @@ QNetworkReply *SkidKZApi::getCategories(QStringList sort, Pagination *pagination
 
 ##### 3.1 Completed components
 
-For simple readonly models you may use complete QML data components called JsonRestListModel {} and XmlRestListModel {}. You hasn't access to manipulate data in this models and pre process items, but by using it you may to skip defining custom C++ models.
+For simple readonly models you can use complete QML data components called JsonRestListModel {} and XmlRestListModel {}.
+You can't manipulate data in these models and pre process items, but by using it you can skip creating of custom C++ models.
 
 For example, start in your QML code:
 
@@ -273,7 +260,7 @@ For example we create one model, but you may use one API class for multiple mode
 
 At this point you have full control on your rest data.
 
-You model class must reimplement 6 methods:
+Your model class must reimplement 6 methods:
 ```
 - declareQML(); //Declare you model for use it in QML code
 - fetchMoreImpl(); //Call API fucntion for fetchMore function (e.g. getCoupons())
@@ -281,7 +268,7 @@ You model class must reimplement 6 methods:
 - preProcessItem(); //Pre proccess each new list item for manage field list
 ```
 
-For example we make Coupons model from our example app (api/models/couponmodel.h):
+For example we create Coupons model from our example app (api/models/couponmodel.h):
 ``` C++
 #ifndef COUPONMODEL_H
 #define COUPONMODEL_H
@@ -398,6 +385,7 @@ CouponModel {
                 'mainImageLink','pageLink','cityId','boughtCount','shortDescription',
                 'createTimestamp', 'serviceName', 'discountType', 'originalCouponPrice', 
                 'originalPrice', 'discountPercent', 'discountPrice']
+
         //Note: only if our APi support expand
         expand: ['city']
         
@@ -545,7 +533,7 @@ Component {
 }
 ...
 ```
-Thus, you can directly access any property of the details model (without `ListView`). E.g. - `details.title` in the following example:
+Then, you can directly access any property of the details model (without `ListView`). E.g. - `details.title` in the following example:
 ``` QML
 ...
 Component {

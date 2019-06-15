@@ -240,9 +240,9 @@ void BaseRestListModel::setLoadingStatus(BaseRestListModel::LoadingStatus loadin
     emit loadingStatusChanged(loadingStatus);
 }
 
-void BaseRestListModel::setAccept(QString accept)
+void BaseRestListModel::setAcceptHeaderValue(QByteArray accept)
 {
-    apiInstance()->setAccept(accept);
+    apiInstance()->setKnownHeaderName(APIBase::KnownHeaders::Accept, accept);
 }
 
 void BaseRestListModel::setLoadingErrorString(QString loadingErrorString)
@@ -400,7 +400,7 @@ Pagination *BaseRestListModel::pagination()
 
 QByteArray BaseRestListModel::accept()
 {
-    return apiInstance()->accept();
+    return apiInstance()->knownHeaderValue(APIBase::KnownHeaders::Accept);
 }
 
 int BaseRestListModel::count() const
@@ -423,8 +423,10 @@ void BaseRestListModel::updateHeadersData(QNetworkReply *reply)
     //update headers data
     QByteArray currentPage;
     currentPage.append(m_pagination.currentPageHeader());
+
     QByteArray totalCount;
     totalCount.append(m_pagination.totalCountHeader());
+
     QByteArray pageCount;
     pageCount.append(m_pagination.pageCountHeader());
 
@@ -433,7 +435,7 @@ void BaseRestListModel::updateHeadersData(QNetworkReply *reply)
     m_pagination.setPageCount(reply->rawHeader(pageCount).toInt());
     reply->deleteLater();
 
-    //todo other headers (limit offset and cursor)
+    //todo other headers (for e.g. limit offset and cursor)
 }
 
 void BaseRestListModel::reset()
@@ -555,7 +557,7 @@ void BaseRestListModel::setApiInstance(APIBase *apiInstance)
 
     m_apiInstance = apiInstance;
 
-    m_apiInstance->setAccept(accept());
+    m_apiInstance->setKnownHeaderValue(APIBase::KnownHeaders::Accept, accept());
     connect(m_apiInstance, &APIBase::replyError,
                      this, &BaseRestListModel::replyError);
 

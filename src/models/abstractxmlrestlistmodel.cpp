@@ -5,7 +5,7 @@
 
 AbstractXmlRestListModel::AbstractXmlRestListModel(QObject *parent) : BaseRestListModel(parent)
 {
-    setAccept("application/xml");
+    setAcceptHeaderValue("application/xml");
 }
 
 QVariantList AbstractXmlRestListModel::getVariantList(QByteArray bytes)

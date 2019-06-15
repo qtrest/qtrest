@@ -1,5 +1,5 @@
-#ifndef APIMANAGER_H
-#define APIMANAGER_H
+#ifndef APIBASE_H
+#define APIBASE_H
 
 #include <QtCore/QtCore>
 #include <QtNetwork/QtNetwork>
@@ -13,33 +13,30 @@ class APIBase : public QObject
 {
     Q_OBJECT
 public:
+
+    enum class KnownHeaders : int
+    {
+        ContentType = 0,
+        Accept = 1,
+        Authorization = 2
+    };
+
     explicit APIBase(QObject *parent = nullptr);
     virtual ~APIBase();
 
     Q_PROPERTY(QByteArray baseUrl READ baseUrl WRITE setBaseUrl NOTIFY baseUrlChanged)
-    Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
-    Q_PROPERTY(QByteArray acceptHeader READ acceptHeader WRITE setAcceptHeader NOTIFY acceptHeaderChanged)
-    Q_PROPERTY(QByteArray contentType READ contentType WRITE setContentType NOTIFY contentTypeChanged)
-    Q_PROPERTY(QByteArray contentTypeHeader READ contentTypeHeader WRITE setContentTypeHeader NOTIFY contentTypeHeaderChanged)
-    //Specify Auth token for each request. Set this before run your requests (You may use Basic auth and Bearer token auth)
-    Q_PROPERTY(QByteArray authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged)
-    //Specify Auth token header name. Default is 'Authorization' (You may use Basic auth and Bearer token auth)
-    Q_PROPERTY(QByteArray authTokenHeader READ authTokenHeader WRITE setAuthTokenHeader NOTIFY authTokenHeaderChanged)
-    //--------------------
 
     QByteArray baseUrl() const;
-    QByteArray accept() const;
-    QByteArray acceptHeader() const;
-    QByteArray contentType() const;
-    QByteArray contentTypeHeader() const;
-    QByteArray authToken() const;
-    QByteArray authTokenHeader() const;
-    void eraseExtraHeader(QByteArray header);
+    QByteArray knownHeaderValue(KnownHeaders code);
+    void removeKnownHeaderValue(KnownHeaders code);
+    void removeExtraHeaderValue(QByteArray header);
 
     virtual QNetworkReply *handleRequest(QString path, QStringList sort, Pagination *pagination,
                                          QVariantMap filters = QVariantMap(),
-                                         QStringList fields = QStringList(), QStringList expand = QStringList(),
-                                         QString id = 0) {
+                                         QStringList fields = QStringList(),
+                                         QStringList expand = QStringList(),
+                                         QString id = 0)
+    {
         Q_UNUSED(path)
         Q_UNUSED(sort)
         Q_UNUSED(pagination)
@@ -54,23 +51,13 @@ public:
 
 public slots:
     void setBaseUrl(QByteArray baseUrl);
-    void setAccept(QString accept);
-    void setAcceptHeader(QByteArray acceptHeader);
-    void setContentType(QString contentType);
-    void setContentTypeHeader(QByteArray contentTypeHeader);
-    void setAuthToken(QByteArray authToken);
-    void setAuthTokenHeader(QByteArray authTokenHeader);
-    void setExtraHeader(QByteArray header, QByteArray token);
+    void setKnownHeaderName(KnownHeaders code, QByteArray name);
+    void setKnownHeaderValue(KnownHeaders code, QByteArray value);
+    void setExtraHeaderValue(QByteArray header, QByteArray token);
 
 signals:
     void replyError(QNetworkReply *reply, QNetworkReply::NetworkError error, QString errorString);
-    void acceptChanged(QByteArray accept);
     void baseUrlChanged(QByteArray baseUrl);
-    void acceptHeaderChanged(QByteArray acceptHeader);
-    void contentTypeChanged(QByteArray contentType);
-    void contentTypeHeaderChanged(QByteArray contentTypeHeader);
-    void authTokenChanged(QByteArray authToken);
-    void authTokenHeaderChanged(QByteArray authTokenHeader);
 
 protected:
     QNetworkReply *get(QUrl url);
@@ -90,9 +77,7 @@ protected:
     QNetworkReply *head(QUrl url);
     QNetworkReply *options(QUrl url);
 
-    QNetworkAccessManager *manager;
-
-    virtual void setRawHeaders(QNetworkRequest *request);
+    virtual void setRequestHeaders(QNetworkRequest *request);
     void connectReplyToErrors(QNetworkReply *reply);
 
 protected slots:
@@ -100,16 +85,14 @@ protected slots:
     void handleReplyError(QNetworkReply::NetworkError error);
     void handleSslErrors(QList<QSslError> errors);
 
+protected:
+    QNetworkAccessManager m_nam;
+
 private:
-    QByteArray m_accept;
     QByteArray m_baseUrl;
-    QByteArray m_acceptHeader;
-    QByteArray m_contentType;
-    QByteArray m_contentTypeHeader;
-    QByteArray m_authToken;
-    QByteArray m_authTokenHeader;
-    QByteArray m_contentType;
-    QMap<QByteArray, QByteArray> m_extraHeaders;
+    QMap<KnownHeaders, QByteArray> m_knownHeadersNames;
+    QMap<KnownHeaders, QByteArray> m_knownHeadersValues;
+    QMap<QByteArray, QByteArray> m_extraHeadersValues;
 };
 
-#endif // APIMANAGER_H
+#endif // APIBASE_H

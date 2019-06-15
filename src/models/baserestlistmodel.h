@@ -35,7 +35,7 @@ public:
     //Specify expand parameter
     Q_PROPERTY(QStringList expand READ expand WRITE setExpand NOTIFY expandChanged)
     //Specify Accept header for application/json or application/xml
-    Q_PROPERTY(QByteArray accept READ accept WRITE setAccept NOTIFY acceptChanged)
+    Q_PROPERTY(QByteArray accept READ accept WRITE setAcceptHeaderValue NOTIFY acceptChanged)
 
     //identify column name, role, last fetched detail and detailModel
     Q_PROPERTY(QString idField READ idField WRITE setIdField NOTIFY idFieldChanged)
@@ -164,7 +164,7 @@ protected slots:
     void fetchMoreFinished();
     void fetchDetailFinished();
     void setLoadingStatus(LoadingStatus loadingStatus);
-    void setAccept(QString accept);
+    void setAcceptHeaderValue(QByteArray accept);
     void setLoadingErrorString(QString loadingErrorString);
     void setLoadingErrorCode(QNetworkReply::NetworkError loadingErrorCode);
 
@@ -184,10 +184,10 @@ private:
     QNetworkReply::NetworkError m_loadingErrorCode;
     QString m_fetchDetailLastId;
     DetailsModel m_detailsModel;
-    QQmlPropertyMap m_details;
     Pagination m_pagination;
     APIBase *m_apiInstance;
     bool m_enableDetailsCaching;
+    QQmlPropertyMap m_details;
 };
 
 #endif // BASERESTLISTMODEL_H

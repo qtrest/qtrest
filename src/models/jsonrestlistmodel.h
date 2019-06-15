@@ -14,7 +14,8 @@ public:
 
     Q_PROPERTY(Requests *requests READ requests)
 
-    static void declareQML() {
+    static void declareQML()
+    {
         AbstractJsonRestListModel::declareQML();
         qmlRegisterType<Requests>("com.github.qtrest.requests", 1, 0, "Requests");
         qmlRegisterType<JsonRestListModel>("com.github.qtrest.jsonrestlistmodel", 1, 0, "JsonRestListModel");

@@ -6,7 +6,7 @@
 
 AbstractJsonRestListModel::AbstractJsonRestListModel(QObject *parent) : BaseRestListModel(parent)
 {
-    setAccept("application/json");
+    setAcceptHeaderValue("application/json");
 }
 
 QVariantList AbstractJsonRestListModel::getVariantList(QByteArray bytes)
