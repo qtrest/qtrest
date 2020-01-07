@@ -1,6 +1,6 @@
 # Qt / QML REST Client  (Beta)
 
-**NOTE: In version 0.2.0 changed build system from qmake to CMake and also we changed internal API, so backward compatibility was breaked.**
+**NOTE: In version 0.2.0 changed build system from qmake to CMake and also we changed internal API, so backward compatibility was broken.**
 
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
