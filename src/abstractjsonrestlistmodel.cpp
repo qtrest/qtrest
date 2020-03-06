@@ -4,6 +4,8 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 
+using namespace Rest;
+
 AbstractJsonRestListModel::AbstractJsonRestListModel(QObject *parent) : BaseRestListModel(parent)
 {
     setAcceptHeaderValue("application/json");

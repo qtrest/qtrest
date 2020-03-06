@@ -1,5 +1,7 @@
 #include "apibase.h"
 
+using namespace Rest;
+
 APIBase::APIBase(QObject *parent)
     : QObject(parent)
 {

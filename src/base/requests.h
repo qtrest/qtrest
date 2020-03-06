@@ -1,9 +1,12 @@
-#ifndef REQUESTS_H
-#define REQUESTS_H
+#ifndef QTREST_REQUESTS_H
+#define QTREST_REQUESTS_H
 
 #include <QObject>
+#include "qtrest_global.h"
 
-class Requests : public QObject
+namespace Rest {
+
+class QTREST_EXPORT Requests : public QObject
 {
     Q_OBJECT
     QString m_get;
@@ -48,4 +51,6 @@ public slots:
     }
 };
 
-#endif // REQUESTS_H
+} // namespace Rest
+
+#endif // QTREST_REQUESTS_H

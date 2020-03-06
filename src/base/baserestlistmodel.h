@@ -1,17 +1,19 @@
-#ifndef BASERESTLISTMODEL_H
-#define BASERESTLISTMODEL_H
+#ifndef QTREST_BASERESTLISTMODEL_H
+#define QTREST_BASERESTLISTMODEL_H
 
 #include <QAbstractListModel>
 #include <QQmlPropertyMap>
+#include "qtrest_global.h"
 #include "restitem.h"
 #include "pagination.h"
 #include "detailsmodel.h"
 #include "apibase.h"
 
-class QNetworkReply;
+namespace Rest {
+
 class DetailsModel;
 
-class BaseRestListModel : public QAbstractListModel
+class QTREST_EXPORT BaseRestListModel : public QAbstractListModel
 {
     Q_OBJECT
     friend DetailsModel;
@@ -190,4 +192,6 @@ private:
     QQmlPropertyMap m_details;
 };
 
-#endif // BASERESTLISTMODEL_H
+} // namespace Rest
+
+#endif // QTREST_BASERESTLISTMODEL_H

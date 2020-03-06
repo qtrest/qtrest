@@ -1,11 +1,14 @@
-#ifndef JSONRESTLISTMODEL_H
-#define JSONRESTLISTMODEL_H
+#ifndef QTREST_JSONRESTLISTMODEL_H
+#define QTREST_JSONRESTLISTMODEL_H
 
 #include "abstractjsonrestlistmodel.h"
 #include <QtQml>
-#include "requests.h"
+#include "base/qtrest_global.h"
+#include "base/requests.h"
 
-class JsonRestListModel : public AbstractJsonRestListModel
+namespace Rest {
+
+class QTREST_EXPORT JsonRestListModel : public AbstractJsonRestListModel
 {
     Q_OBJECT
 
@@ -34,4 +37,6 @@ protected:
     Requests m_requests;
 };
 
-#endif // JSONRESTLISTMODEL_H
+} // namespace Rest
+
+#endif // QTREST_JSONRESTLISTMODEL_H

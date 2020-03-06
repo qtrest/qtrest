@@ -1,15 +1,14 @@
-#ifndef APIBASE_H
-#define APIBASE_H
+#ifndef QTREST_APIBASE_H
+#define QTREST_APIBASE_H
+
+#include "pagination.h"
 
 #include <QtCore/QtCore>
 #include <QtNetwork/QtNetwork>
-#include "pagination.h"
 
-class QNetworkAccessManager;
-class QNetworkReply;
-class QHttpMultiPart;
+namespace Rest {
 
-class APIBase : public QObject
+class QTREST_EXPORT APIBase : public QObject
 {
     Q_OBJECT
 public:
@@ -95,4 +94,6 @@ private:
     QMap<QByteArray, QByteArray> m_extraHeadersValues;
 };
 
-#endif // APIBASE_H
+} // namespace Rest
+
+#endif // QTREST_APIBASE_H

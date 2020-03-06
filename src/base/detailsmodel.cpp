@@ -1,6 +1,8 @@
 #include "detailsmodel.h"
-#include "baserestlistmodel.h"
+#include "base/baserestlistmodel.h"
 #include <QDebug>
+
+using namespace Rest;
 
 DetailsModel::DetailsModel()
 {

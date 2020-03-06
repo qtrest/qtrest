@@ -1,5 +1,7 @@
 #include "jsonrestlistmodel.h"
 
+using namespace Rest;
+
 JsonRestListModel::JsonRestListModel(QObject *parent) : AbstractJsonRestListModel(parent)
 {
 

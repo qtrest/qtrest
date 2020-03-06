@@ -3,6 +3,8 @@
 #include <QNetworkReply>
 #include <QXmlStreamReader>
 
+using namespace Rest;
+
 AbstractXmlRestListModel::AbstractXmlRestListModel(QObject *parent) : BaseRestListModel(parent)
 {
     setAcceptHeaderValue("application/xml");

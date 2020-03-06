@@ -1,5 +1,7 @@
 #include "xmlrestlistmodel.h"
 
+using namespace Rest;
+
 XmlRestListModel::XmlRestListModel()
 {
 

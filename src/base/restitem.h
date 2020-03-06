@@ -1,9 +1,12 @@
-#ifndef RESTITEM_H
-#define RESTITEM_H
+#ifndef QTREST_RESTITEM_H
+#define QTREST_RESTITEM_H
 
 #include <QVariantMap>
+#include "qtrest_global.h"
 
-class RestItem {
+namespace Rest {
+
+class QTREST_EXPORT RestItem {
 public:
     RestItem();
     explicit RestItem(QVariantMap object, QString idField);
@@ -23,4 +26,6 @@ private:
     bool m_isValid;
 };
 
-#endif // RESTITEM_H
+} // namespace Rest
+
+#endif // QTREST_RESTITEM_H

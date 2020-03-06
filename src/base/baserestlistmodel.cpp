@@ -1,6 +1,8 @@
 #include "baserestlistmodel.h"
 #include <QtQml>
 
+using namespace Rest;
+
 BaseRestListModel::BaseRestListModel(QObject *parent) :
     QAbstractListModel(parent),
     m_roleNamesIndex(0),

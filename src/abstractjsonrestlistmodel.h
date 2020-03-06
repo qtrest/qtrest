@@ -1,11 +1,12 @@
-#ifndef ABSJSONRESTLISTMODEL_H
-#define ABSJSONRESTLISTMODEL_H
+#ifndef QTREST_ABSJSONRESTLISTMODEL_H
+#define QTREST_ABSJSONRESTLISTMODEL_H
 
-#include "baserestlistmodel.h"
+#include "base/qtrest_global.h"
+#include "base/baserestlistmodel.h"
 
-class QNetworkReply;
+namespace Rest {
 
-class AbstractJsonRestListModel : public BaseRestListModel
+class QTREST_EXPORT AbstractJsonRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
@@ -19,4 +20,6 @@ protected:
     virtual QVariantMap getVariantMap(QByteArray bytes);
 };
 
-#endif // ABSJSONRESTLISTMODEL_H
+} // namespace Rest
+
+#endif // QTREST_ABSJSONRESTLISTMODEL_H

@@ -1,11 +1,14 @@
-#ifndef XMLRESTLISTMODEL_H
-#define XMLRESTLISTMODEL_H
+#ifndef QTREST_XMLRESTLISTMODEL_H
+#define QTREST_XMLRESTLISTMODEL_H
 
 #include "abstractxmlrestlistmodel.h"
 #include <QtQml>
-#include "requests.h"
+#include "base/qtrest_global.h"
+#include "base/requests.h"
 
-class XmlRestListModel : public AbstractXmlRestListModel
+namespace Rest {
+
+class QTREST_EXPORT XmlRestListModel : public AbstractXmlRestListModel
 {
 public:
     XmlRestListModel();
@@ -31,4 +34,6 @@ protected:
     Requests m_requests;
 };
 
-#endif // XMLRESTLISTMODEL_H
+} // namespace Rest
+
+#endif // QTREST_XMLRESTLISTMODEL_H

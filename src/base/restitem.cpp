@@ -1,6 +1,8 @@
 #include "restitem.h"
 #include <QDebug>
 
+using namespace Rest;
+
 RestItem::RestItem() : m_isUpdated(false), m_isValid(false) {
 }
 

@@ -1,11 +1,12 @@
-#ifndef ABSXMLRESTLISTMODEL_H
-#define ABSXMLRESTLISTMODEL_H
+#ifndef QTREST_ABSXMLRESTLISTMODEL_H
+#define QTREST_ABSXMLRESTLISTMODEL_H
 
-#include "baserestlistmodel.h"
+#include "base/qtrest_global.h"
+#include "base/baserestlistmodel.h"
 
-class QNetworkReply;
+namespace Rest {
 
-class AbstractXmlRestListModel : public BaseRestListModel
+class QTREST_EXPORT AbstractXmlRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:
@@ -59,4 +60,6 @@ private:
     QString m_itemElement;
 };
 
-#endif // ABSXMLRESTLISTMODEL_H
+} // namespace Rest
+
+#endif // QTREST_ABSXMLRESTLISTMODEL_H

@@ -3,9 +3,11 @@
 
 #include <QObject>
 #include <QtQml>
-#include "apibase.h"
+#include "base/apibase.h"
 
 #define URI_GET_POSTS "/posts"
+
+using namespace Rest;
 
 //Sample for https://jsonplaceholder.typicode.com
 class JSONPlaceholderApi : public APIBase

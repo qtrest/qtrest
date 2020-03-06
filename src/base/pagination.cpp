@@ -1,5 +1,7 @@
 #include "pagination.h"
 
+using namespace Rest;
+
 Pagination::Pagination(QObject *parent) : QObject(parent),
     m_perPage(20), m_currentPage(0), m_currentPageHeader("X-Pagination-Current-Page"), m_totalCount(0),
     m_totalCountHeader("X-Pagination-Total-Count"), m_pageCount(0), m_pageCountHeader("X-Pagination-Page-Count")

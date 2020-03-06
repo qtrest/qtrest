@@ -1,9 +1,12 @@
-#ifndef PAGINATIONTEST_H
-#define PAGINATIONTEST_H
+#ifndef QTREST_PAGINATIONTEST_H
+#define QTREST_PAGINATIONTEST_H
 
 #include <QObject>
+#include "qtrest_global.h"
 
-class Pagination : public QObject
+namespace Rest {
+
+class QTREST_EXPORT Pagination : public QObject
 {
     Q_OBJECT
 
@@ -111,4 +114,6 @@ private:
     QString m_cursorValue;
 };
 
-#endif // PAGINATIONTEST_H
+} // namespace Rest
+
+#endif // QTREST_PAGINATIONTEST_H
