@@ -1,5 +1,7 @@
 project(qtrest-example VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
 qt5_add_resources(QT_RESOURCES main.qrc)
 
 set(HEADERS_FILES

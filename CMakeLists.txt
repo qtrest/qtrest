@@ -10,7 +10,7 @@ set(CMAKE_AUTOUIC ON)
 
 project(qtrest VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
+find_package(Qt5 COMPONENTS Qml Quick REQUIRED)
 
 set(HEADERS_FILES
     src/apibase.h
