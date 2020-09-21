@@ -27,7 +27,7 @@ public:
     Q_PROPERTY(QStringList sort READ sort WRITE setSort NOTIFY sortChanged)
 
     //Specify pagination
-    Q_PROPERTY(Pagination *pagination READ pagination)
+    Q_PROPERTY(Pagination *pagination READ pagination CONSTANT)
     //Specify filters parametres
     Q_PROPERTY(QVariantMap filters READ filters WRITE setFilters NOTIFY filtersChanged)
     //Specify fields parameter
