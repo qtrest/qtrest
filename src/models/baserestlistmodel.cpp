@@ -1,5 +1,7 @@
 #include "baserestlistmodel.h"
+#ifdef WITH_QML_SUPPORT
 #include <QtQml>
+#endif
 
 BaseRestListModel::BaseRestListModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -19,11 +21,13 @@ BaseRestListModel::~BaseRestListModel()
         delete m_apiInstance;
 }
 
+#ifdef WITH_QML_SUPPORT
 void BaseRestListModel::declareQML()
 {
     qRegisterMetaType<DetailsModel*>("DetailsModel*");
     qmlRegisterType<Pagination>("com.github.qtrest.pagination", 1, 0, "Pagination");
 }
+#endif
 
 void BaseRestListModel::reload()
 {
@@ -105,13 +109,19 @@ void BaseRestListModel::fetchMore(const QModelIndex &parent)
         break;
     }
 
+    qDebug() << "BaseRestListModel::fetchMore";
     QNetworkReply *reply = fetchMoreImpl(parent);
-    connect(reply, &QNetworkReply::finished,
+    if (reply != nullptr) {
+        connect(reply, &QNetworkReply::finished,
              this, &BaseRestListModel::fetchMoreFinished);
+
+             
+    }
 }
 
 void BaseRestListModel::fetchMoreFinished()
 {
+    qDebug() << "BaseRestListModel::fetchMoreFinished";
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     if (apiInstance()->checkReplyIsError(reply) || !reply->isFinished()) {
         return;
@@ -191,10 +201,12 @@ void BaseRestListModel::fetchDetail(QString id)
 
     m_detailsModel.invalidateModel();
 
+#ifdef WITH_QML_SUPPORT
     // clean up the details model (QQmlPropertyMap)
     for (const QString &key : m_details.keys()) {
         m_details.clear(key);
     }
+#endif
 
     QNetworkReply *reply = fetchDetailImpl(id);
     connect(reply, &QNetworkReply::finished,
@@ -220,18 +232,21 @@ void BaseRestListModel::fetchDetailFinished()
 
     detailsModel()->setSourceModel(this);
 
+#ifdef WITH_QML_SUPPORT
     // fill up the details model (QQmlPropertyMap)
     QMapIterator<QString, QVariant> i(item);
     while (i.hasNext()) {
         i.next();
         m_details.insert(i.key(), i.value());
     }
+#endif
 
     setLoadingStatus(LoadingStatus::IdleDetails);
 }
 
 void BaseRestListModel::setLoadingStatus(BaseRestListModel::LoadingStatus loadingStatus)
 {
+    //qDebug() << "setLoadingStatus" << loadingStatus;
     if (m_loadingStatus == loadingStatus) {
         return;
     }
@@ -284,6 +299,8 @@ void BaseRestListModel::replyError(QNetworkReply *reply, QNetworkReply::NetworkE
     setLoadingErrorCode(error);
     setLoadingErrorString(errorString);
     setLoadingStatus(LoadingStatus::Error);
+
+    qDebug() << "BaseRestListModel::replyError" << error << errorString;
 }
 
 RestItem BaseRestListModel::createItem(QVariantMap value)
@@ -388,10 +405,12 @@ DetailsModel *BaseRestListModel::detailsModel()
     return &m_detailsModel;
 }
 
+#ifdef WITH_QML_SUPPORT
 QQmlPropertyMap *BaseRestListModel::details()
 {
     return &m_details;
 }
+#endif
 
 Pagination *BaseRestListModel::pagination()
 {

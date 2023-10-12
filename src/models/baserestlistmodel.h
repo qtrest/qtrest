@@ -2,7 +2,9 @@
 #define BASERESTLISTMODEL_H
 
 #include <QAbstractListModel>
+#ifdef WITH_QML_SUPPORT
 #include <QQmlPropertyMap>
+#endif
 #include "restitem.h"
 #include "pagination.h"
 #include "detailsmodel.h"
@@ -43,7 +45,9 @@ public:
     Q_PROPERTY(int idFieldRole READ idFieldRole)
     Q_PROPERTY(QString fetchDetailLastId READ fetchDetailLastId)
     Q_PROPERTY(DetailsModel *detailsModel READ detailsModel)
+#ifdef WITH_QML_SUPPORT
     Q_PROPERTY(QQmlPropertyMap *details READ details CONSTANT)
+#endif
 
     //load status and result code
     Q_PROPERTY(LoadingStatus loadingStatus READ loadingStatus WRITE setLoadingStatus NOTIFY loadingStatusChanged)
@@ -64,7 +68,9 @@ public:
 
     Q_ENUMS(LoadingStatus)
 
+#ifdef WITH_QML_SUPPORT
     static void declareQML();
+#endif
 
     //Properties GET methods
     QStringList sort() const;
@@ -78,7 +84,9 @@ public:
     int idFieldRole() const;
     QString fetchDetailLastId() const;
     DetailsModel *detailsModel();
+#ifdef WITH_QML_SUPPORT
     QQmlPropertyMap *details();
+#endif
     Pagination *pagination();
     QByteArray accept();
     int count() const;
@@ -187,7 +195,9 @@ private:
     Pagination m_pagination;
     APIBase *m_apiInstance;
     bool m_enableDetailsCaching;
+#ifdef WITH_QML_SUPPORT
     QQmlPropertyMap m_details;
+#endif
 };
 
 #endif // BASERESTLISTMODEL_H

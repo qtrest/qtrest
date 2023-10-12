@@ -2,7 +2,9 @@
 #define XMLRESTLISTMODEL_H
 
 #include "abstractxmlrestlistmodel.h"
+#ifdef WITH_QML_SUPPORT
 #include <QtQml>
+#endif
 #include "requests.h"
 
 class XmlRestListModel : public AbstractXmlRestListModel
@@ -12,11 +14,13 @@ public:
 
     Q_PROPERTY(Requests *requests READ requests)
 
+#ifdef WITH_QML_SUPPORT
     static void declareQML() {
         AbstractXmlRestListModel::declareQML();
         qmlRegisterType<Requests>("com.github.qtrest.requests", 1, 0, "Requests");
         qmlRegisterType<XmlRestListModel>("com.github.qtrest.xmlrestlistmodel", 1, 0, "XmlRestListModel");
     }
+#endif
 
     Requests *requests()
     {

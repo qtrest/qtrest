@@ -10,8 +10,8 @@ set(CMAKE_AUTOUIC ON)
 
 #params
 #available params:
-# - NO_BUILD_EXAMPLE=1
-# - WITHOUT_QML_SUPPORT=1
+# - BUILD_EXAMPLE=1
+# - WITH_QML_SUPPORT=1
 
 if("${BUILD_TYPE}" STREQUAL "SHARED")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -19,10 +19,14 @@ if("${BUILD_TYPE}" STREQUAL "SHARED")
 endif()
 
 # find required packages
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Network REQUIRED)
 
-if (NOT "${WITHOUT_QML_SUPPORT}" STREQUAL "1")
-  find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
+if ("${WITH_QML_SUPPORT}" STREQUAL "1")
+    find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
+    message("Build with QML support")
+else()
+    message("Build without QML support")
 endif()
 
 set(HEADERS_FILES
@@ -61,6 +65,7 @@ set(ALL_FILES ${HEADERS_FILES} ${SOURCE_FILES})
 #install
 set(QTREST_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include/qtrest)
 set(QTREST_INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+set(QTREST_INSTALL_TOOLS_DIR ${CMAKE_INSTALL_PREFIX}/tools/qtrest)
 set(QTREST_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 
 # add library
@@ -72,12 +77,13 @@ else()
     add_definitions(-DQTREST_BUILD_DYNAMIC)
 endif()
 
-set(LINK_LIBRARIES "Qt5::Core Qt5::Network")
-if (NOT "${WITHOUT_QML_SUPPORT}" STREQUAL "1")
-  set(LINK_LIBRARIES "${LINK_LIBRARIES} Qt5::Quick Qt5::Qml")
+set(ADDITIONAL_LIBRARIES )
+if ("${WITH_QML_SUPPORT}" STREQUAL "1")
+  set(ADDITIONAL_LIBRARIES Qt5::Quick Qt5::Qml)
+  add_definitions(-DWITH_QML_SUPPORT)
 endif()
 
-target_link_libraries(${PROJECT_NAME} ${LINK_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network ${ADDITIONAL_LIBRARIES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 
@@ -92,7 +98,7 @@ endif()
 install(FILES ${HEADERS_FILES} DESTINATION ${QTREST_INSTALL_INCLUDE_DIR})
 
 # add example
-if (NOT "${NO_BUILD_EXAMPLE}" STREQUAL "1")
+if ("${BUILD_EXAMPLE}" STREQUAL "1")
     add_subdirectory(example)
 endif()
 
