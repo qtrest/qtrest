@@ -13,8 +13,8 @@ By default library support standard Yii2 REST API and Django REST Framework. Rea
 - http://www.django-rest-framework.org/
 
 Fully functional example:
-- Example C++/QML app which uses `qtrest`: https://github.com/qtrest/qtrest-example
-- Example server-side PHP app sources, which is backend for `qtrest-example`: https://github.com/skidkz/server
+- Example C++/QML app source which uses `qtrest`: https://github.com/qtrest/qtrest-example
+- Example server-side PHP app source, which is backend for `qtrest-example`: https://github.com/qtrest/qtrest-example-backend
 
 ## Features
 - Based on QAbstractListModel with fetchMore and canFetchMore support;
