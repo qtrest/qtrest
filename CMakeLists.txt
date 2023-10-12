@@ -18,7 +18,12 @@ if("${BUILD_TYPE}" STREQUAL "SHARED")
     message("Build type: ${BUILD_TYPE}")
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
+# find required packages
+find_package(Qt5 COMPONENTS Core REQUIRED)
+
+if (NOT "${WITHOUT_QML_SUPPORT}" STREQUAL "1")
+  find_package(Qt5 COMPONENTS Widgets Qml Quick REQUIRED)
+endif()
 
 set(HEADERS_FILES
     src/apibase.h
