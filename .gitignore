@@ -94,3 +94,4 @@ _deps
 *.app
 
 .DS_Store
+.vscode

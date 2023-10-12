@@ -2,7 +2,9 @@
 #define JSONRESTLISTMODEL_H
 
 #include "abstractjsonrestlistmodel.h"
+#ifdef WITH_QML_SUPPORT
 #include <QtQml>
+#endif
 #include "requests.h"
 
 class JsonRestListModel : public AbstractJsonRestListModel
@@ -14,12 +16,14 @@ public:
 
     Q_PROPERTY(Requests *requests READ requests)
 
+#ifdef WITH_QML_SUPPORT
     static void declareQML()
     {
         AbstractJsonRestListModel::declareQML();
         qmlRegisterType<Requests>("com.github.qtrest.requests", 1, 0, "Requests");
         qmlRegisterType<JsonRestListModel>("com.github.qtrest.jsonrestlistmodel", 1, 0, "JsonRestListModel");
     }
+#endif
 
     Requests *requests()
     {

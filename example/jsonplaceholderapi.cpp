@@ -8,9 +8,12 @@ JSONPlaceholderApi::JSONPlaceholderApi(QObject *parent)
 
 QNetworkReply *JSONPlaceholderApi::handleRequest(QString path, QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields, QStringList expand, QString id)
 {
+    qDebug() << "JSONPlaceholderApi::handleRequest" << path;
     if (path == URI_GET_POSTS) {
         return getPosts(sort, pagination, filters, fields, expand);
     }
+
+    return nullptr;
 }
 
 QNetworkReply *JSONPlaceholderApi::getPosts(QStringList sort, Pagination *pagination, QVariantMap filters, QStringList fields, QStringList expand)
@@ -67,6 +70,8 @@ QNetworkReply *JSONPlaceholderApi::getPosts(QStringList sort, Pagination *pagina
 
     //Make GET request
     QNetworkReply *reply = get(url);
+
+    qDebug() << "JSONPlaceholderApi::getPosts" << url << sort << pagination << filters << fields << expand;
 
     return reply;
 }
