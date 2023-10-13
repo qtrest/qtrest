@@ -1,6 +1,8 @@
 # Qt / QML REST Client
 
-** NOTE: versions >= 0.4.0 supports installation by vcpkg**
+**NOTE** Versions >= 0.4.0 distribute by vcpkg. Versions 0.2.x can be built manually by README manual.
+
+**NOTE 2** Vcpkg PR and build status for all platforms: https://github.com/microsoft/vcpkg/pull/34455
 
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
