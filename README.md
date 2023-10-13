@@ -1,6 +1,6 @@
-# Qt / QML REST Client  (Beta)
+# Qt / QML REST Client
 
-**NOTE: In version 0.2.0 changed build system from qmake to CMake and also we changed internal API, so backward compatibility was broken.**
+** NOTE: versions >= 0.4.0 supports installation by vcpkg**
 
 Qt REST Client  - small and simple REST API client for any Qt/QML application.
 Library support standard JSON and XML REST APIs and auto mapping REST data to QAbstractListModel for QML
@@ -48,13 +48,21 @@ Fully functional example:
 Usage library is simplest as it possible.
 
 #### 1. Build library
+
+Windows:
 ```
-git clone https://github.com/kafeg/qtrest.git qtrest
-cd qtrest
-mkdir build
-cd build
-cmake ..
-cmake --build .
+git clone https://github.com/microsoft/vcpkg
+cd vcpkg
+.\bootstrap-vcpkg.bat
+.\vcpkg.exe install ptyqt
+```
+
+UNIX:
+```
+git clone https://github.com/microsoft/vcpkg
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg install ptyqt
 ```
 
 #### 2. Create your own API class
