@@ -54,7 +54,7 @@ Windows:
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 .\bootstrap-vcpkg.bat
-.\vcpkg.exe install ptyqt
+.\vcpkg.exe install libqtrest
 ```
 
 UNIX:
@@ -62,7 +62,7 @@ UNIX:
 git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 ./bootstrap-vcpkg.sh
-./vcpkg install ptyqt
+./vcpkg install libqtrest
 ```
 
 #### 2. Create your own API class
