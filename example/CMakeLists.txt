@@ -11,23 +11,18 @@ set(SOURCE_FILES
     jsonplaceholderapi.cpp
 )
 
-set(INCLUDE_DIRS
-    .
-)
-
 set(ALL_FILES ${HEADERS_FILES} ${SOURCE_FILES})
 
 add_executable(${PROJECT_NAME} ${ALL_FILES} ${QT_RESOURCES})
+add_dependencies(${PROJECT_NAME} qtrest)
 
-set(ADDITIONAL_LIBRARIES)
+set(ADDITIONAL_LIBRARIES "")
 if ("${WITH_QML_SUPPORT}" STREQUAL "1")
   set(ADDITIONAL_LIBRARIES Qt5::Quick Qt5::Qml)
   add_definitions(-DWITH_QML_SUPPORT)
 endif()
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network ${ADDITIONAL_LIBRARIES} qtrest)
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} qtrest Qt5::Core Qt5::Network ${ADDITIONAL_LIBRARIES})
 
 set(BINARY_NAME ${PROJECT_NAME})
 if (MSVC)

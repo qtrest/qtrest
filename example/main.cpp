@@ -34,12 +34,13 @@ int main(int argc, char *argv[])
         jsonRestListModel.requests()->setGetDetails("/posts/{id}");
 
         qDebug() << "Fetching data";
+        QEventLoop el;
         jsonRestListModel.reload();
-        QObject::connect(&jsonRestListModel, &JsonRestListModel::countChanged, [&jsonRestListModel](){
+        QObject::connect(&jsonRestListModel, &JsonRestListModel::countChanged, [&el, &jsonRestListModel](){
             qDebug() << "Data fetched" << jsonRestListModel.count();
+            el.quit();
         });
 
-        QEventLoop el;
         QTimer::singleShot(5000, [&el](){ el.quit(); });
         el.exec();
         qApp->quit();
