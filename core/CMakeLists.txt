@@ -8,6 +8,7 @@ set(HEADERS_FILES
     detailsmodel.h
     jsonrestlistmodel.h
     pagination.h
+    qtrest_global.h
     requests.h
     restitem.h
     xmlrestlistmodel.h
@@ -49,8 +50,11 @@ target_link_libraries(qtrest PUBLIC Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_M
 if("${BUILD_TYPE}" STREQUAL "STATIC")
     install(TARGETS qtrest DESTINATION ${QTREST_INSTALL_LIB_DIR})
 else()
-    message("CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} ${QTREST_INSTALL_BIN_DIR} ${QTREST_INSTALL_LIB_DIR}")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qtrest.dll DESTINATION ${QTREST_INSTALL_BIN_DIR})
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qtrest.lib DESTINATION ${QTREST_INSTALL_LIB_DIR})
+    # Use install(TARGETS) for proper cross-platform support
+    install(TARGETS qtrest
+        RUNTIME DESTINATION ${QTREST_INSTALL_BIN_DIR}   # Windows DLLs
+        LIBRARY DESTINATION ${QTREST_INSTALL_LIB_DIR}   # Linux/macOS .so/.dylib
+        ARCHIVE DESTINATION ${QTREST_INSTALL_LIB_DIR}   # Windows import libs
+    )
 endif()
 install(FILES ${HEADERS_FILES} DESTINATION ${QTREST_INSTALL_INCLUDE_DIR})

@@ -2,10 +2,11 @@
 #define ABSJSONRESTLISTMODEL_H
 
 #include "baserestlistmodel.h"
+#include "qtrest_global.h"
 
 class QNetworkReply;
 
-class AbstractJsonRestListModel : public BaseRestListModel
+class QTREST_EXPORT AbstractJsonRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:

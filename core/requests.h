@@ -2,8 +2,9 @@
 #define REQUESTS_H
 
 #include <QObject>
+#include "qtrest_global.h"
 
-class Requests : public QObject
+class QTREST_EXPORT Requests : public QObject
 {
     Q_OBJECT
     QString m_get;

@@ -9,11 +9,12 @@
 #include "pagination.h"
 #include "detailsmodel.h"
 #include "apibase.h"
+#include "qtrest_global.h"
 
 class QNetworkReply;
 class DetailsModel;
 
-class BaseRestListModel : public QAbstractListModel
+class QTREST_EXPORT BaseRestListModel : public QAbstractListModel
 {
     Q_OBJECT
     friend DetailsModel;

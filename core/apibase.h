@@ -4,12 +4,13 @@
 #include <QtCore/QtCore>
 #include <QtNetwork/QtNetwork>
 #include "pagination.h"
+#include "qtrest_global.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
 class QHttpMultiPart;
 
-class APIBase : public QObject
+class QTREST_EXPORT APIBase : public QObject
 {
     Q_OBJECT
 public:

@@ -2,8 +2,9 @@
 #define PAGINATIONTEST_H
 
 #include <QObject>
+#include "qtrest_global.h"
 
-class Pagination : public QObject
+class QTREST_EXPORT Pagination : public QObject
 {
     Q_OBJECT
 

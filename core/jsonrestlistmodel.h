@@ -6,8 +6,9 @@
 #include <QtQml>
 #endif
 #include "requests.h"
+#include "qtrest_global.h"
 
-class JsonRestListModel : public AbstractJsonRestListModel
+class QTREST_EXPORT JsonRestListModel : public AbstractJsonRestListModel
 {
     Q_OBJECT
 

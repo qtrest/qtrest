@@ -2,10 +2,11 @@
 #define ABSXMLRESTLISTMODEL_H
 
 #include "baserestlistmodel.h"
+#include "qtrest_global.h"
 
 class QNetworkReply;
 
-class AbstractXmlRestListModel : public BaseRestListModel
+class QTREST_EXPORT AbstractXmlRestListModel : public BaseRestListModel
 {
     Q_OBJECT
 public:

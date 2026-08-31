@@ -2,8 +2,9 @@
 #define DETAILSMODEL_H
 
 #include <QSortFilterProxyModel>
+#include "qtrest_global.h"
 
-class DetailsModel : public QSortFilterProxyModel
+class QTREST_EXPORT DetailsModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
